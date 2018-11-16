@@ -1,8 +1,8 @@
 using System;
 
-namespace Models 
+namespace Models
 {
-    public enum Color 
+    public enum Color
     {
         blue,
         green,
