@@ -26,7 +26,7 @@ namespace Models
         }
         private List<Tile> Tiles;
 
-        public IEnumerable<Tile> DrawTiles(int numberOfTiles)
+        public List<Tile> DrawTiles(int numberOfTiles)
         {
             var drawnTiles = new List<Tile>();
             for(int i = 0; i < numberOfTiles; ++i)
@@ -40,7 +40,7 @@ namespace Models
             return drawnTiles;
         }
 
-        public IEnumerable<Tile> ReturnTiles(IEnumerable<Tile> tiles)
+        public List<Tile> ReturnTiles(List<Tile> tiles)
         {
             //Check if there are enough tiles in the bag
             if(tiles.Count() > Tiles.Count())
