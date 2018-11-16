@@ -6,6 +6,8 @@ namespace Models
 {
     public class TileBag
     {
+		[ThreadStatic]
+		private static Random _random = new Random();
         public TileBag(int numOfSameShapeAndColor = 3)
         {
             Tiles = new List<Tile>();
@@ -19,7 +21,7 @@ namespace Models
             Shuffle();
         }
 
-        private List<Tile> Tiles;
+        internal List<Tile> Tiles;
 
         public List<Tile> DrawTiles(int numberOfTiles)
         {
@@ -49,8 +51,7 @@ namespace Models
 
         public void Shuffle()
         {
-            var rng = new Random();
-            Tiles = Tiles.OrderBy(_ => rng.Next()).ToList();
+            Tiles = Tiles.OrderBy(_ => _random.Next()).ToList();
         }
     }
 }
