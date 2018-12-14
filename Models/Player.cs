@@ -8,7 +8,7 @@ namespace Models
 
         public Player()
         {
-            this.CurrentHand = new Tile[MAX_HAND_SIZE];   
+            this.CurrentHand = new Tile[MAX_HAND_SIZE];
         }
         public string Name { get; set; }
         public int Score { get; set; }
