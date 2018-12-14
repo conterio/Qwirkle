@@ -1,14 +1,15 @@
+using Models.Interfaces;
 using System;
 
 namespace Models
 {
-    public class Player
+    public class Player : IPlayer
     {
         private const int MAX_HAND_SIZE = 6;
 
         public Player()
         {
-            this.CurrentHand = new Tile[MAX_HAND_SIZE];   
+            this.CurrentHand = new Tile[MAX_HAND_SIZE];
         }
         public string Name { get; set; }
         public int Score { get; set; }

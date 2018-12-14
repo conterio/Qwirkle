@@ -6,5 +6,6 @@ namespace Models
 {
     public class GameSettings
     {
+        public Guid GameId { get; set; }
     }
 }
