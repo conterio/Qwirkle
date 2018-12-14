@@ -22,6 +22,7 @@ namespace Api
 
         public void Register(IPlayer Player)
         {
+            if(string.)
             throw new NotImplementedException();
         }
     }

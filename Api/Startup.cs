@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Api.SignalR;
+﻿using Autofac;
+using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using Repository;
+using System;
 
 namespace Api
 {
@@ -21,20 +22,37 @@ namespace Api
             Configuration = configuration;
         }
 
+        public IContainer ApplicationContainer { get; private set; }
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
+            // Add services to the collection.
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>
-            {
-                builder.AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowCredentials()
-                    .WithOrigins("http://localhost:5050");
-            }));
-            services.AddSignalR();
+
+
+            // Create the container builder.
+            var builder = new ContainerBuilder();
+
+            // Register dependencies, populate the services from
+            // the collection, and build the container.
+            //
+            // Note that Populate is basically a foreach to add things
+            // into Autofac that are in the collection. If you register
+            // things in Autofac BEFORE Populate then the stuff in the
+            // ServiceCollection can override those things; if you register
+            // AFTER Populate those registrations can override things
+            // in the ServiceCollection. Mix and match as needed.
+            builder.Populate(services);
+
+            //Register all interface implementations
+            builder.RegisterAssemblyTypes(typeof(IGameRepository).Assembly).AsImplementedInterfaces().InstancePerLifetimeScope();
+            this.ApplicationContainer = builder.Build();
+
+            // Create the IServiceProvider based on the container.
+            return new AutofacServiceProvider(this.ApplicationContainer);
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
