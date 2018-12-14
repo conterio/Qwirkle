@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Api.SignalR;
 ﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
@@ -11,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Repository;
-using System;
+
 
 namespace Api
 {
@@ -30,7 +29,7 @@ namespace Api
         {
             // Add services to the collection.
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-
+            services.AddSingleton<PlayerRepository>();
 
             // Create the container builder.
             var builder = new ContainerBuilder();
@@ -68,7 +67,7 @@ namespace Api
             }
 
             app.UseCors("CorsPolicy");
-            app.UseSignalR(routes => routes.MapHub<ChatHub>("/chathub"));
+            app.UseSignalR(routes => routes.MapHub<ServerManager>("/hub"));
             app.UseHttpsRedirection();
             app.UseMvc();
         }

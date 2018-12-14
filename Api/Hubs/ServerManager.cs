@@ -1,15 +1,26 @@
 ﻿using Api.Hubs.Interfaces;
+using Microsoft.AspNetCore.SignalR;
 using Models;
 using Models.Interfaces;
+using Repository;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Api
 {
-    public class ServerManager : IServerManager
+    public class ServerManager : Hub, IServerManager, ILobbyManager
     {
+        private readonly IPlayerRepository _playerRepository;
+        ServerManager(IPlayerRepository playerRepository)
+        {
+            _playerRepository = playerRepository;
+        }
+
+        public bool AddPlayer()
+        {
+            throw new NotImplementedException();
+        }
+
         public List<GameSettings> AvailableGames()
         {
             throw new NotImplementedException();
@@ -20,9 +31,28 @@ namespace Api
             throw new NotImplementedException();
         }
 
-        public void Register(IPlayer Player)
+        public List<IPlayer> GetAvailableAIPlayers()
         {
-            if(string.)
+            throw new NotImplementedException();
+        }
+
+        public bool JoinGame(Guid gameId, IPlayer player)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Register(IPlayer player)
+        {
+            if (string.IsNullOrWhiteSpace(player.Name))
+            {
+                return false;
+            }
+            _playerRepository.AddPlayer(Context.ConnectionId, player);
+            return true;
+        }
+
+        public void StartGame()
+        {
             throw new NotImplementedException();
         }
     }
