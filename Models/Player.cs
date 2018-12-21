@@ -1,5 +1,4 @@
 using Models.Interfaces;
-using System;
 
 namespace Models
 {
@@ -11,8 +10,10 @@ namespace Models
         {
             this.CurrentHand = new Tile[MAX_HAND_SIZE];
         }
-        public string Name { get; set; }
         public int Score { get; set; }
         public Tile[] CurrentHand { get; set; }
+        public string ConnectionId { get; set; }
+        public string Name { get; set; }
+        public bool IsHumanPlayer { get; set; }
     }
 }

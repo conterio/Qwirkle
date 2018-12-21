@@ -11,9 +11,13 @@ namespace Api
     public class ServerManager : Hub, IServerManager, ILobbyManager
     {
         private readonly IPlayerRepository _playerRepository;
-        ServerManager(IPlayerRepository playerRepository)
+        private readonly IGameRepository _gameRepository;
+
+        ServerManager(IPlayerRepository playerRepository,
+            IGameRepository gameRepository)
         {
             _playerRepository = playerRepository;
+            _gameRepository = gameRepository;
         }
 
         public bool AddPlayer()
@@ -21,19 +25,19 @@ namespace Api
             throw new NotImplementedException();
         }
 
-        public List<GameSettings> AvailableGames()
+        public List<Game> AvailableGames()
         {
-            throw new NotImplementedException();
+            return _gameRepository.GetLobbies();
         }
 
-        public GameSettings CreateGame(GameSettings settings)
+        public Game CreateGame(GameSettings settings)
         {
-            throw new NotImplementedException();
+            return _gameRepository.CreateGame(settings);
         }
 
-        public List<IPlayer> GetAvailableAIPlayers()
+        public List<IPlayer> GetAvailablePlayers()
         {
-            throw new NotImplementedException();
+            return _playerRepository.GetAllPlayers();
         }
 
         public bool JoinGame(Guid gameId, IPlayer player)
@@ -41,17 +45,22 @@ namespace Api
             throw new NotImplementedException();
         }
 
-        public bool Register(IPlayer player)
+        public bool Register(string playerName)
         {
-            if (string.IsNullOrWhiteSpace(player.Name))
+            if (string.IsNullOrWhiteSpace(playerName))
             {
                 return false;
             }
-            _playerRepository.AddPlayer(Context.ConnectionId, player);
+            _playerRepository.AddPlayer(Context.ConnectionId, playerName);
             return true;
         }
 
         public void StartGame()
+        {
+            throw new NotImplementedException();
+        }
+
+        GameSettings IServerManager.CreateGame(GameSettings settings)
         {
             throw new NotImplementedException();
         }

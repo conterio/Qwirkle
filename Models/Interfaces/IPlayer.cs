@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Models.Interfaces
+﻿namespace Models.Interfaces
 {
     public interface IPlayer
     {
+        string ConnectionId { get; set; }
         string Name { get; set; }
+        bool IsHumanPlayer { get; set; }
     }
 }

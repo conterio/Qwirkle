@@ -1,4 +1,5 @@
 ﻿using System;
+using Models.Enums;
 
 namespace Models
 {
@@ -6,5 +7,7 @@ namespace Models
     {
         public Guid GameId { get; set; }
         public ITurn[] Turns { get; set; }
+        public GameSettings GameSettings { get; set; }
+        public GameStatus Status { get; set; }
     }
 }

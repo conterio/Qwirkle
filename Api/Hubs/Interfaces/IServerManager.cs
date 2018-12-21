@@ -6,9 +6,8 @@ namespace Api.Hubs.Interfaces
 {
     public interface IServerManager
     {
-        bool Register(IPlayer Player);
-        List<GameSettings> AvailableGames();
+        bool Register(string playerName);
+        List<Game> AvailableGames();
         GameSettings CreateGame(GameSettings settings);
-
     }
 }

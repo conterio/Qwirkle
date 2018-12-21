@@ -4,21 +4,27 @@ using System.Text;
 using System.Collections.Concurrent;
 using Models.Interfaces;
 using System.Linq;
+using Models;
 
 namespace Repository
 {
-    public interface IPlayerRepository 
+    public interface IPlayerRepository
     {
-        void AddPlayer(string connectionId, IPlayer player);
+        void AddPlayer(string connectionId, string playerName);
         List<IPlayer> GetAllPlayers();
     }
     public class PlayerRepository : IPlayerRepository
     {
         private ConcurrentDictionary<string, IPlayer> Players { get; set; }
 
-        public void AddPlayer(string connectionId, IPlayer player)
+        public void AddPlayer(string connectionId, string playerName)
         {
-            Players.AddOrUpdate(connectionId, player, (_,__) => player);
+            var player = new Player()
+            {
+                ConnectionId = connectionId,
+                Name = playerName
+            };
+            Players.AddOrUpdate(connectionId, player, (_, __) => player);
         }
         public List<IPlayer> GetAllPlayers()
         {

@@ -9,6 +9,6 @@ namespace Api.Hubs.Interfaces
         bool JoinGame(Guid gameId, IPlayer player);
         void StartGame();
         bool AddPlayer();
-        List<IPlayer> GetAvailableAIPlayers();
+        List<IPlayer> GetAvailablePlayers();
     }
 }
