@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-﻿using Autofac;
+using Api.Hubs.Interfaces;
+using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -30,6 +31,24 @@ namespace Api
             // Add services to the collection.
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddSingleton<PlayerRepository>();
+            services.AddTransient<ServerManager>();
+
+            services.AddCors(options =>
+            {                
+                options.AddPolicy("CorsPolicy", x =>
+                {
+                    x.AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .WithOrigins("https://localhost:44381")
+                    .AllowCredentials();
+                });
+            });
+
+            services.AddSignalR(o =>
+            {
+                o.EnableDetailedErrors = true;
+            });
+
 
             // Create the container builder.
             var builder = new ContainerBuilder();
@@ -67,7 +86,12 @@ namespace Api
             }
 
             app.UseCors("CorsPolicy");
-            app.UseSignalR(routes => routes.MapHub<ServerManager>("/hub"));
+
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<ServerManager>("/hub");
+            });
+
             app.UseHttpsRedirection();
             app.UseMvc();
         }

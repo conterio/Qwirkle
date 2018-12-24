@@ -5,6 +5,7 @@ using Models.Interfaces;
 using Repository;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Api
 {
@@ -13,11 +14,16 @@ namespace Api
         private readonly IPlayerRepository _playerRepository;
         private readonly IGameRepository _gameRepository;
 
-        ServerManager(IPlayerRepository playerRepository,
+        public ServerManager(IPlayerRepository playerRepository,
             IGameRepository gameRepository)
         {
             _playerRepository = playerRepository;
             _gameRepository = gameRepository;
+        }
+
+        public async Task SendMessage(string user, string message)
+        {
+            await Clients.All.SendAsync("ReceiveMessage", user, message);
         }
 
         public bool AddPlayer()
