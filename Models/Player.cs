@@ -1,4 +1,5 @@
 using Models.Interfaces;
+using Models.ViewModels;
 
 namespace Models
 {
@@ -15,5 +16,15 @@ namespace Models
         public string ConnectionId { get; set; }
         public string Name { get; set; }
         public bool IsHumanPlayer { get; set; }
+
+        public PlayerViewModel GetViewModel()
+        {
+            return new PlayerViewModel()
+            {
+                Score = this.Score,
+                Name = this.Name,
+                IsHumanPlayer = this.IsHumanPlayer
+            };
+        }
     }
 }

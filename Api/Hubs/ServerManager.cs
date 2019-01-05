@@ -20,9 +20,17 @@ namespace Api
             _gameRepository = gameRepository;
         }
 
-        public bool AddPlayer()
+        public bool SignalAddPlayer(Guid gameId, IPlayer player)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Clients.Client(player.ConnectionId).SendAsync(nameof(IAIManager.JoinGame), gameId).GetAwaiter().GetResult();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public List<Game> AvailableGames()
@@ -42,7 +50,18 @@ namespace Api
 
         public bool JoinGame(Guid gameId, IPlayer player)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var game = _gameRepository.GetGame(gameId);
+                game.Players.Add(player);
+                Groups.AddToGroupAsync(player.ConnectionId, gameId.ToString()).GetAwaiter().GetResult();
+                Clients.Group(gameId.ToString()).SendAsync(nameof(IGameActions.LobbyState), game.GetViewModel());
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public bool Register(string playerName)
@@ -56,11 +75,6 @@ namespace Api
         }
 
         public void StartGame()
-        {
-            throw new NotImplementedException();
-        }
-
-        GameSettings IServerManager.CreateGame(GameSettings settings)
         {
             throw new NotImplementedException();
         }

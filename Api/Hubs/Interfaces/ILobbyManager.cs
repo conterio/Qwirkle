@@ -8,7 +8,7 @@ namespace Api.Hubs.Interfaces
     {
         bool JoinGame(Guid gameId, IPlayer player);
         void StartGame();
-        bool AddPlayer();
+        bool SignalAddPlayer(Guid gameId, IPlayer player);
         List<IPlayer> GetAvailablePlayers();
     }
 }

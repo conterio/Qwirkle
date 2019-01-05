@@ -1,5 +1,4 @@
 ﻿using Models;
-using Models.Interfaces;
 using System.Collections.Generic;
 
 namespace Api.Hubs.Interfaces
@@ -8,6 +7,6 @@ namespace Api.Hubs.Interfaces
     {
         bool Register(string playerName);
         List<Game> AvailableGames();
-        GameSettings CreateGame(GameSettings settings);
+        Game CreateGame(GameSettings settings);
     }
 }
