@@ -39,8 +39,8 @@ namespace Api
                 {
                     x.AllowAnyMethod()
                     .AllowAnyHeader()
-                    .WithOrigins("https://localhost:44381")
-                    .AllowCredentials();
+                    .WithOrigins("http://localhost:49796")					
+					.AllowCredentials();
                 });
             });
 
