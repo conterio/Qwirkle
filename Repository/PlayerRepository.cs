@@ -15,6 +15,11 @@ namespace Repository
     }
     public class PlayerRepository : IPlayerRepository
     {
+        public PlayerRepository()
+        {
+            Players = new ConcurrentDictionary<string, IPlayer>();
+        }
+
         private ConcurrentDictionary<string, IPlayer> Players { get; set; }
 
         public void AddPlayer(string connectionId, string playerName)

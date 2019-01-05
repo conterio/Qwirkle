@@ -1,7 +1,9 @@
-﻿namespace Api.Hubs.Interfaces
+﻿using System;
+
+namespace Api.Hubs.Interfaces
 {
     public interface IAIManager
     {
-        bool InvitePlayer();
+        void JoinGame(Guid gameId);
     }
 }

@@ -12,7 +12,7 @@ namespace Models
 
         /*
          * max players?
-         * 
+         *
          */
     }
 }
