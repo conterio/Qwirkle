@@ -7,6 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Repository;
 using System;
+using Busi;
+using Busi.Helpers;
+using Busi.IBusi;
 
 namespace Api
 {
@@ -26,6 +29,20 @@ namespace Api
             // Add services to the collection.
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddSingleton<PlayerRepository>();
+			services.AddSingleton<IShuffleHelper>();
+            services.AddTransient<IGameBusi, GameBusi>();
+
+            services.AddSignalR(options => options.EnableDetailedErrors = true);
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", x =>
+                {
+                    x.AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .WithOrigins("http://172.24.49.138:49796")
+                        .AllowCredentials();
+                });
+            });
 
             // Create the container builder.
             var builder = new ContainerBuilder();
@@ -63,7 +80,7 @@ namespace Api
             }
 
             app.UseCors("CorsPolicy");
-            app.UseSignalR(routes => routes.MapHub<ServerManager>("/hub"));
+            app.UseSignalR(routes => routes.MapHub<ServerManagerHub>("/hub"));
             app.UseHttpsRedirection();
             app.UseMvc();
         }

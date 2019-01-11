@@ -13,6 +13,7 @@ namespace Models
         {
             Players = new List<IPlayer>();
             Turns = new List<ITurn>();
+            TileBag = new TileBag();
         }
 
         public Guid GameId { get; set; }
@@ -20,6 +21,7 @@ namespace Models
         public List<ITurn> Turns { get; set; }
         public GameSettings GameSettings { get; set; }
         public GameStatus Status { get; set; }
+        public TileBag TileBag { get; set; }
 
         public GameViewModel GetViewModel()
         {
