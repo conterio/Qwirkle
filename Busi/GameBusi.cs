@@ -1,10 +1,10 @@
 ﻿using Busi.Helpers;
 using Busi.IBusi;
+using Busi.IRepo;
+using Busi.IService;
 using Models.Enums;
-using Repository;
-using System;
-using Models;
 using Models.Interfaces;
+using System;
 
 namespace Busi
 {
@@ -12,26 +12,29 @@ namespace Busi
     {
         private readonly IGameRepository _gameRepository;
         private readonly IShuffleHelper _shuffleHelper;
+        private readonly IUpdater.IUpdater _updater;
 
-        public GameBusi(IGameRepository gameRepository, IShuffleHelper shuffleHelper)
+        public GameBusi(IGameRepository gameRepository, IShuffleHelper shuffleHelper, IUpdater.IUpdater updater)
         {
             _gameRepository = gameRepository;
             _shuffleHelper = shuffleHelper;
+            _updater = updater;
         }
 
-        public Game StartGame(Guid gameId)
+        public void StartGame(Guid gameId)
         {
             var game = _gameRepository.GetGame(gameId);
             game.Status = GameStatus.InProgress;
             _shuffleHelper.Shuffle(game.Players);
-            return game;
+            _updater.UpdateGroup(game.GameId.ToString(),nameof(IGameActions.GameStarted), game.GetViewModel());
+            _updater.UpdateClient(game.Players[0].ConnectionId, nameof(IGameActions.SignalTurn), game.GetViewModel());
         }
 
-        public Game AddPlayer(Guid gameId, IPlayer player)
+        public void AddPlayer(Guid gameId, IPlayer player)
         {
             var game = _gameRepository.GetGame(gameId);
             game.Players.Add(player);
-            return game;
+            _updater.UpdateGroup(game.GameId.ToString(), nameof(IGameActions.LobbyState), game.GetViewModel());
         }
     }
 }

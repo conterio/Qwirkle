@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Collections.Concurrent;
+﻿using Models;
 using Models.Interfaces;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
-using Models;
+using Busi.IRepo;
 
 namespace Repository
 {
-    public interface IPlayerRepository
-    {
-        void AddPlayer(string connectionId, string playerName);
-        List<IPlayer> GetAllPlayers();
-    }
     public class PlayerRepository : IPlayerRepository
     {
         public PlayerRepository()

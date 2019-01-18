@@ -1,12 +1,11 @@
-﻿using Models;
-using Models.Interfaces;
+﻿using Models.Interfaces;
 using System;
 
 namespace Busi.IBusi
 {
     public interface IGameBusi
 	{
-		Game StartGame(Guid gameId);
-	    Game AddPlayer(Guid gameId, IPlayer player);
+		void StartGame(Guid gameId);
+	    void AddPlayer(Guid gameId, IPlayer player);
 	}
 }

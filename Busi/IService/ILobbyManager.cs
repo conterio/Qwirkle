@@ -2,9 +2,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace Api.Hubs.Interfaces
+namespace Busi.IService
 {
-    public interface ILobbyManagerHub
+    public interface ILobbyManager
     {
         bool JoinGame(Guid gameId, IPlayer player);
         void StartGame(Guid gameId);

@@ -1,15 +1,15 @@
-using Api.Hubs.Interfaces;
+using Busi.IBusi;
+using Busi.IRepo;
+using Busi.IService;
 using Microsoft.AspNetCore.SignalR;
 using Models;
 using Models.Interfaces;
-using Repository;
 using System;
 using System.Collections.Generic;
-using Busi.IBusi;
 
 namespace Api
 {
-    public class ServerManagerHub : Hub, IServerManagerHub, ILobbyManagerHub
+    public class ServerManagerHub : Hub, IServerManager, ILobbyManager
     {
         private readonly IPlayerRepository _playerRepository;
         private readonly IGameRepository _gameRepository;
@@ -56,9 +56,8 @@ namespace Api
         {
             try
             {
-                var game = _gameBusi.AddPlayer(gameId, player);
+                _gameBusi.AddPlayer(gameId, player);
                 Groups.AddToGroupAsync(player.ConnectionId, gameId.ToString()).GetAwaiter().GetResult();
-                Clients.Group(gameId.ToString()).SendAsync(nameof(IGameActionsHub.LobbyState), game.GetViewModel());
                 return true;
             }
             catch (Exception)
@@ -79,9 +78,7 @@ namespace Api
 
         public void StartGame(Guid gameId)
         {
-            var game = _gameBusi.StartGame(gameId);
-            Clients.Group(gameId.ToString()).SendAsync(nameof(IGameActionsHub.GameStarted), game.GetViewModel());
-            Clients.Client(game.Players[0].ConnectionId).SendAsync(nameof(IGameActionsHub.SignalTurn), game.GetViewModel());
+            _gameBusi.StartGame(gameId);
         }
     }
 }

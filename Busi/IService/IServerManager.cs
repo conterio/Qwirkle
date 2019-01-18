@@ -1,9 +1,9 @@
 ﻿using Models;
 using System.Collections.Generic;
 
-namespace Api.Hubs.Interfaces
+namespace Busi.IService
 {
-    public interface IServerManagerHub
+    public interface IServerManager
     {
         bool Register(string playerName);
         List<Game> AvailableGames();

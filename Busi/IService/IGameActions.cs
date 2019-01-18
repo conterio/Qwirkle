@@ -1,9 +1,8 @@
-﻿using Models;
-using Models.ViewModels;
+﻿using Models.ViewModels;
 
-namespace Api.Hubs.Interfaces
+namespace Busi.IService
 {
-    public interface IGameActionsHub
+    public interface IGameActions
     {
         void GameStarted(GameViewModel game);
         void LobbyState();

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Api.Hubs.Interfaces
+namespace Busi.IService
 {
     public interface IAIManager
     {

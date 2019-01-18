@@ -3,17 +3,11 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using Busi.IRepo;
 using Models.Enums;
 
 namespace Repository
 {
-    public interface IGameRepository
-    {
-        Game CreateGame(GameSettings gameSettings);
-        Game GetGame(Guid guid);
-        List<Game> GetLobbies();
-    }
-
     public class GameRepository : IGameRepository
     {
         private ConcurrentDictionary<Guid, Game> Games { get; set; }
