@@ -3,13 +3,13 @@ using Busi.IRepo;
 using Busi.IService;
 using Microsoft.AspNetCore.SignalR;
 using Models;
-using Models.Interfaces;
+using Models.ViewModels;
 using System;
 using System.Collections.Generic;
 
 namespace Api
 {
-    public class ServerManagerHub : Hub, IServerManager, ILobbyManager
+    public class ServerManagerHub : Hub, IServerManager, ILobbyManager, IGameManager
     {
         private readonly IPlayerRepository _playerRepository;
         private readonly IGameRepository _gameRepository;
@@ -24,7 +24,7 @@ namespace Api
             _gameBusi = gameBusi;
         }
 
-        public bool SignalAddPlayer(Guid gameId, IPlayer player)
+        public bool SignalAddPlayer(Guid gameId, Player player)
         {
             try
             {
@@ -47,12 +47,12 @@ namespace Api
             return _gameRepository.CreateGame(settings);
         }
 
-        public List<IPlayer> GetAvailablePlayers()
+        public List<Player> GetAvailablePlayers()
         {
             return _playerRepository.GetAllPlayers();
         }
 
-        public bool JoinGame(Guid gameId, IPlayer player)
+        public bool JoinGame(Guid gameId, Player player)
         {
             try
             {
@@ -79,6 +79,16 @@ namespace Api
         public void StartGame(Guid gameId)
         {
             _gameBusi.StartGame(gameId);
+        }
+
+        public void PlayTiles(PlayTilesTurnViewModel turn)
+        {
+            _gameBusi.PlayTiles(Context.ConnectionId, turn);
+        }
+
+        public void SwapTiles(SwapTilesTurnViewModel turn)
+        {
+            _gameBusi.SwapTiles(Context.ConnectionId, turn);
         }
     }
 }

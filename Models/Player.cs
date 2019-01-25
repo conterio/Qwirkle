@@ -1,30 +1,38 @@
-using Models.Interfaces;
+using System.Collections.Generic;
 using Models.ViewModels;
 
 namespace Models
 {
-    public class Player : IPlayer
+    public class Player
     {
         private const int MAX_HAND_SIZE = 6;
 
         public Player()
         {
-            this.CurrentHand = new Tile[MAX_HAND_SIZE];
+            this.CurrentHand = new List<Tile>();
         }
         public int Score { get; set; }
-        public Tile[] CurrentHand { get; set; }
+        public List<Tile> CurrentHand { get; set; }
         public string ConnectionId { get; set; }
         public string Name { get; set; }
         public bool IsHumanPlayer { get; set; }
+        public bool IsSpectator { get; set; }
 
-        public PlayerViewModel GetViewModel()
+        public PlayerViewModel GetViewModel(bool includeHand)
         {
-            return new PlayerViewModel()
+            var playerViewModel = new PlayerViewModel()
             {
                 Score = this.Score,
                 Name = this.Name,
                 IsHumanPlayer = this.IsHumanPlayer
             };
+
+            if (includeHand)
+            {
+                playerViewModel.CurrentHand = this.CurrentHand;
+            }
+
+            return playerViewModel;
         }
     }
 }

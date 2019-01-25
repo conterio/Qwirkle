@@ -1,4 +1,4 @@
-﻿using Models.Interfaces;
+﻿using Models;
 using System.Collections.Generic;
 
 namespace Busi.IRepo
@@ -6,6 +6,7 @@ namespace Busi.IRepo
     public interface IPlayerRepository
     {
         void AddPlayer(string connectionId, string playerName);
-        List<IPlayer> GetAllPlayers();
+        List<Player> GetAllPlayers();
+        Player GetPlayer(string connectionId);
     }
 }

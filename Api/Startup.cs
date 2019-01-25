@@ -32,16 +32,6 @@ namespace Api
             services.AddTransient<IGameBusi, GameBusi>();
 
             services.AddSignalR(options => options.EnableDetailedErrors = true);
-            services.AddCors(options =>
-            {
-                options.AddPolicy("CorsPolicy", x =>
-                {
-                    x.AllowAnyMethod()
-                        .AllowAnyHeader()
-                        .WithOrigins("http://172.24.49.138:49796")
-                        .AllowCredentials();
-                });
-            });
 
             return services.BuildServiceProvider();
         }
@@ -58,7 +48,14 @@ namespace Api
                 app.UseHsts();
             }
 
-            app.UseCors("CorsPolicy");
+            app.UseCors(x =>
+            {
+                x.AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
+            });
             app.UseSignalR(routes => routes.MapHub<ServerManagerHub>("/hub"));
             app.UseHttpsRedirection();
             app.UseMvc();

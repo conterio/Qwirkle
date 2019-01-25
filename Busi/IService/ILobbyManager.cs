@@ -1,4 +1,4 @@
-﻿using Models.Interfaces;
+﻿using Models;
 using System;
 using System.Collections.Generic;
 
@@ -6,9 +6,9 @@ namespace Busi.IService
 {
     public interface ILobbyManager
     {
-        bool JoinGame(Guid gameId, IPlayer player);
+        bool JoinGame(Guid gameId, Player player);
         void StartGame(Guid gameId);
-        bool SignalAddPlayer(Guid gameId, IPlayer player);
-        List<IPlayer> GetAvailablePlayers();
+        bool SignalAddPlayer(Guid gameId, Player player);
+        List<Player> GetAvailablePlayers();
     }
 }

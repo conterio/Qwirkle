@@ -23,6 +23,11 @@ namespace Models
 
         internal List<Tile> Tiles;
 
+        public int Count()
+        {
+            return Tiles.Count();
+        }
+
         public List<Tile> DrawTiles(int numberOfTiles)
         {
             var drawnTiles = Tiles.Take(numberOfTiles).ToList();

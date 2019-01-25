@@ -1,7 +1,9 @@
+using System.Collections.Generic;
+
 namespace Models
 {
     public class PlaceTiles : ITurn {
-        public TilePlacement[] Placements;
-        public Tile[] NewTiles { get; set; }
+        public List<TilePlacement> Placements;
+        public List<Tile> NewTiles { get; set; }
     }
 }

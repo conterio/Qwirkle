@@ -1,7 +1,9 @@
+using System.Collections.Generic;
+
 namespace Models
 {
     public interface ITurn
     {
-        Tile[] NewTiles { get; set; }
+        List<Tile> NewTiles { get; set; }
     }
 }

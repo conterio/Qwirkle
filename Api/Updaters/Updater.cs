@@ -14,7 +14,7 @@ namespace Api.Updaters
         }
         public void UpdateGroup(string groupId, string methodName, object payload)
         {
-            _hubContext.Clients.Group(groupId).SendAsync(nameof(IGameActions.LobbyState), payload);
+            _hubContext.Clients.Group(groupId).SendAsync(nameof(IGameActions.SignalGameState), payload);
         }
 
         public void UpdateClient(string connectionId, string methodName, object payload)

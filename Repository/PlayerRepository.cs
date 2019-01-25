@@ -1,5 +1,4 @@
 ﻿using Models;
-using Models.Interfaces;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,10 +10,10 @@ namespace Repository
     {
         public PlayerRepository()
         {
-            Players = new ConcurrentDictionary<string, IPlayer>();
+            Players = new ConcurrentDictionary<string, Player>();
         }
 
-        private ConcurrentDictionary<string, IPlayer> Players { get; set; }
+        private ConcurrentDictionary<string, Player> Players { get; set; }
 
         public void AddPlayer(string connectionId, string playerName)
         {
@@ -25,9 +24,14 @@ namespace Repository
             };
             Players.AddOrUpdate(connectionId, player, (_, __) => player);
         }
-        public List<IPlayer> GetAllPlayers()
+        public List<Player> GetAllPlayers()
         {
             return Players.Values.ToList();
+        }
+
+        public Player GetPlayer(string connectionId)
+        {
+            return Players.Values.SingleOrDefault(p => p.ConnectionId == connectionId);
         }
     }
 }

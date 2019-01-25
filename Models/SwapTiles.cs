@@ -1,8 +1,10 @@
+using System.Collections.Generic;
+
 namespace Models
 {
     public class SwapTiles : ITurn
     {
-        public Tile[] TurnedInTiles { get; set; }
-        public Tile[] NewTiles { get; set; }
+        public List<Tile> TurnedInTiles { get; set; }
+        public List<Tile> NewTiles { get; set; }
     }
 }

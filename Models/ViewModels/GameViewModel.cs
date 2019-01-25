@@ -1,7 +1,6 @@
-﻿using System;
+﻿using Models.Enums;
+using System;
 using System.Collections.Generic;
-using System.Text;
-using Models.Enums;
 
 namespace Models.ViewModels
 {
@@ -11,5 +10,7 @@ namespace Models.ViewModels
         public List<PlayerViewModel> Players { get; set; }
         public GameSettings GameSettings { get; set; }
         public GameStatus GameStatus { get; set; }
+        public string CurrentTurnPlayerId { get; set; }
+        public int NumberOfTilesInBag { get; set; }
     }
 }
