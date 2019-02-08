@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿    using System.Collections.Generic;
 
 namespace Models.ViewModels
 {
@@ -8,5 +8,6 @@ namespace Models.ViewModels
         public string Name { get; set; }
         public bool IsHumanPlayer { get; set; }
         public List<Tile> CurrentHand { get; set; }
-    }
+		public bool StillPlaying { get; set; }
+	}
 }

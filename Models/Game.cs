@@ -1,5 +1,6 @@
 ﻿using Models.Enums;
 using Models.ViewModels;
+using Qwirkle.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,8 +23,9 @@ namespace Models
         public GameStatus Status { get; set; }
         public TileBag TileBag { get; set; }
         public string CurrentTurnPlayerId { get; set; }
-
-        public GameViewModel GetViewModel(string playerConnectionId)
+        public GameBoard GameBoard { get; set;}
+        
+		public GameViewModel GetViewModel(string playerConnectionId)
         {
             return new GameViewModel()
             {

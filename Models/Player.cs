@@ -17,8 +17,9 @@ namespace Models
         public string Name { get; set; }
         public bool IsHumanPlayer { get; set; }
         public bool IsSpectator { get; set; }
+		public bool StillPlaying { get; set; }
 
-        public PlayerViewModel GetViewModel(bool includeHand)
+		public PlayerViewModel GetViewModel(bool includeHand)
         {
             var playerViewModel = new PlayerViewModel()
             {

@@ -17,6 +17,11 @@ namespace Api.Updaters
             _hubContext.Clients.Group(groupId).SendAsync(nameof(IGameActions.SignalGameState), payload);
         }
 
+		public void UpdateGroupTurnPlayed(string groupId, object playload)
+		{
+			_hubContext.Clients.Group(groupId).SendAsync(nameof(IGameActions.SignalTurnPlayed), payload);
+		}
+
         public void UpdateClient(string connectionId, string methodName, object payload)
         {
 

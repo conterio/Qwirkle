@@ -2,6 +2,7 @@
 using Busi;
 using Busi.Helpers;
 using Busi.IBusi;
+using Busi.IRepo;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -27,9 +28,10 @@ namespace Api
         {
             // Add services to the collection.
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            services.AddSingleton<PlayerRepository>();
+            services.AddTransient<IPlayerRepository>();
 			services.AddSingleton<IShuffleHelper, ShuffleHelper>();
             services.AddTransient<IGameBusi, GameBusi>();
+
 
             services.AddSignalR(options => options.EnableDetailedErrors = true);
 

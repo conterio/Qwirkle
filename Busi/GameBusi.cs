@@ -15,13 +15,15 @@ namespace Busi
         private readonly IPlayerRepository _playerRepository;
         private readonly IShuffleHelper _shuffleHelper;
         private readonly IUpdater.IUpdater _updater;
+		private readonly IPlayerBusi _playerBusi;
 
-        public GameBusi(IGameRepository gameRepository, IPlayerRepository playerRepository, IShuffleHelper shuffleHelper, IUpdater.IUpdater updater)
+        public GameBusi(IGameRepository gameRepository, IPlayerRepository playerRepository, IShuffleHelper shuffleHelper, IUpdater.IUpdater updater, IPlayerBusi playerBusi)
         {
             _gameRepository = gameRepository;
             _playerRepository = playerRepository;
             _shuffleHelper = shuffleHelper;
             _updater = updater;
+            _playerBusi = playerBusi;
         }
 
         public void StartGame(Guid gameId)
@@ -47,37 +49,56 @@ namespace Busi
 
         public void PlayTiles(string playerConnectionId, PlayTilesTurnViewModel turn)
         {
+            var game = _gameRepository.GetGame(turn.GameId);
+            var player = _playerRepository.GetPlayer(playerConnectionId);
+
+            if (game.CurrentTurnPlayerId != playerConnectionId)
+            {
+                //Not this players turn, invalidate player
+                _playerBusi.InvalidatePlayer(player.ConnectionId);
+                return;
+            }
+
+
+            var validMove = _gameBoardBusi.AddTiles(turn.Placements);
+
+            if(!validMove)
+            {
+                //Invalid move
+                _playerBusi.InvalidatePlayer(player.ConnectionId);
+            }
+
+            var newTiles = game.TileBag.DrawTiles(turn.Placements.Count);
+
             throw new NotImplementedException();
         }
 
         public void SwapTiles(string playerConnectionId, SwapTilesTurnViewModel turn)
         {
             var game = _gameRepository.GetGame(turn.GameId);
-            if (game.CurrentTurnPlayerId != playerConnectionId)
+
+			if (game.CurrentTurnPlayerId != playerConnectionId)
             {
-                //TODO invalidate that player. It's not their turn.
+                //Not this players turn, invalidate player
+                _playerBusi.InvalidatePlayer(playerConnectionId);
                 return;
             }
-
-            var player = _playerRepository.GetPlayer(playerConnectionId);
 
             //drawTiles if the player tries to draw more tiles than
             //there are in the bag That is an invalid move.
             if (game.TileBag.Count() < turn.TurnedInTiles.Count)
             {
-                //TODO invalid turn. Tried to draw too many tiles
-                return;
+				_playerBusi.InvalidatePlayer(playerConnectionId);
+				return;
             }
             var newTiles = game.TileBag.DrawTiles(turn.TurnedInTiles.Count);
-            foreach (var tile in turn.TurnedInTiles)
-            {
-                if (!player.CurrentHand.Contains(tile))
-                {
-                    //TODO invalid turn. They are trying to turn in a tile that wasn't in their hand.
-                }
+			var validMove = _playerBusi.RemoveTilesFromHand(turn.TurnedInTiles, playerConnectionId);
+			if(!validMove)
+			{
+				//invalid turn. They are trying to turn in a tile that wasn't in their hand.
+				_playerBusi.InvalidatePlayer(playerConnectionId);
+			}
 
-                player.CurrentHand.Remove(tile);
-            }
             game.TileBag.ReturnTiles(turn.TurnedInTiles);
             player.CurrentHand.AddRange(newTiles);
         }
