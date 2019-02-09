@@ -13,7 +13,10 @@ namespace Models
         {
             Players = new List<Player>();
             Turns = new List<ITurn>();
+            Status = GameStatus.Lobby;
+            GameSettings = new GameSettings();
             TileBag = new TileBag();
+            GameBoard = new GameBoard();
         }
 
         public Guid GameId { get; set; }
@@ -24,7 +27,7 @@ namespace Models
         public TileBag TileBag { get; set; }
         public string CurrentTurnPlayerId { get; set; }
         public GameBoard GameBoard { get; set;}
-        
+
 		public GameViewModel GetViewModel(string playerConnectionId)
         {
             return new GameViewModel()
@@ -35,6 +38,15 @@ namespace Models
                 GameStatus = this.Status,
                 CurrentTurnPlayerId = CurrentTurnPlayerId,
                 NumberOfTilesInBag = TileBag.Count()
+            };
+        }
+
+        public TurnPlayedViewModel GetTurnPlayedViewModel(string playerConnectionId)
+        {
+            return new TurnPlayedViewModel
+            {
+                Player = Players.SingleOrDefault(p => p.ConnectionId == CurrentTurnPlayerId)?.GetViewModel(CurrentTurnPlayerId == playerConnectionId)
+                //TODO
             };
         }
     }

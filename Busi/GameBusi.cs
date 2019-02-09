@@ -36,7 +36,7 @@ namespace Busi
             foreach (var player in game.Players)
             {
                 player.CurrentHand = game.TileBag.DrawTiles(game.GameSettings.HandSize);
-                _updater.UpdateClient(player.ConnectionId, nameof(IGameActions.SignalGameState), game.GetViewModel(player.ConnectionId));
+                _updater.UpdateClient(player.ConnectionId, game.GetViewModel(player.ConnectionId));
             }
         }
 
@@ -44,33 +44,31 @@ namespace Busi
         {
             var game = _gameRepository.GetGame(gameId);
             game.Players.Add(player);
-            _updater.UpdateGroup(game.GameId.ToString(), nameof(IGameActions.SignalGameState), game.GetViewModel(null));
+            _updater.UpdateGroup(game.GameId.ToString(), game.GetViewModel(null));
         }
 
         public void PlayTiles(string playerConnectionId, PlayTilesTurnViewModel turn)
         {
             var game = _gameRepository.GetGame(turn.GameId);
-            var player = _playerRepository.GetPlayer(playerConnectionId);
 
             if (game.CurrentTurnPlayerId != playerConnectionId)
             {
                 //Not this players turn, invalidate player
-                _playerBusi.InvalidatePlayer(player.ConnectionId);
+                _playerBusi.InvalidatePlayer(playerConnectionId);
                 return;
             }
 
-
-            var validMove = _gameBoardBusi.AddTiles(turn.Placements);
+            var validMove = game.GameBoard.AddTiles(turn.Placements);
 
             if(!validMove)
             {
                 //Invalid move
-                _playerBusi.InvalidatePlayer(player.ConnectionId);
+                _playerBusi.InvalidatePlayer(playerConnectionId);
             }
 
             var newTiles = game.TileBag.DrawTiles(turn.Placements.Count);
-
-            throw new NotImplementedException();
+            _playerBusi.AddTilesToHand(newTiles, playerConnectionId);
+            _updater.UpdateGroupTurnPlayed(game.GameId.ToString(), );
         }
 
         public void SwapTiles(string playerConnectionId, SwapTilesTurnViewModel turn)
@@ -100,7 +98,7 @@ namespace Busi
 			}
 
             game.TileBag.ReturnTiles(turn.TurnedInTiles);
-            player.CurrentHand.AddRange(newTiles);
+            _playerBusi.AddTilesToHand(newTiles, playerConnectionId);
         }
     }
 }

@@ -5,7 +5,8 @@
     /// </summary>
     public interface IUpdater
     {
-        void UpdateGroup(string groupId, string methodName, object payload);
-        void UpdateClient(string connectionId, string methodName, object payload);
+        void UpdateGroup(string groupId,object payload);
+        void UpdateClient(string connectionId, object payload);
+        void UpdateGroupTurnPlayed(string groupId, object payload);
     }
 }
