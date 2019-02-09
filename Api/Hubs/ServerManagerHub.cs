@@ -15,7 +15,7 @@ namespace Api
         private readonly IGameRepository _gameRepository;
         private readonly IGameBusi _gameBusi;
 
-        ServerManagerHub(IPlayerRepository playerRepository,
+        public ServerManagerHub(IPlayerRepository playerRepository,
             IGameRepository gameRepository,
             IGameBusi gameBusi)
         {

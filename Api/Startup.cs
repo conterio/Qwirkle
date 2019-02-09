@@ -1,8 +1,11 @@
 ﻿using Autofac;
+using Api.Updaters;
 using Busi;
 using Busi.Helpers;
 using Busi.IBusi;
 using Busi.IRepo;
+using Busi.IService;
+using Busi.IUpdater;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -28,9 +31,13 @@ namespace Api
         {
             // Add services to the collection.
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            services.AddTransient<IPlayerRepository>();
+            services.AddSingleton<IPlayerRepository, PlayerRepository>();
 			services.AddSingleton<IShuffleHelper, ShuffleHelper>();
             services.AddTransient<IGameBusi, GameBusi>();
+			services.AddTransient<IGameRepository, GameRepository>();
+			services.AddSingleton<IServerManager, ServerManagerHub>();
+			services.AddTransient<IUpdater, Updater>();
+			services.AddTransient<IPlayerBusi, PlayerBusi>();
 
 
             services.AddSignalR(options => options.EnableDetailedErrors = true);

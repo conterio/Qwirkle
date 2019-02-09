@@ -4,6 +4,7 @@ using Busi.IRepo;
 using Busi.IService;
 using Models;
 using Models.Enums;
+using Models.EventModels;
 using Models.ViewModels;
 using System;
 
@@ -49,6 +50,9 @@ namespace Busi
 
         public void PlayTiles(string playerConnectionId, PlayTilesTurnViewModel turn)
         {
+			//create a turn even which we will return to the group
+			TurnEvent turnEvent = new TurnEvent();
+
             var game = _gameRepository.GetGame(turn.GameId);
 
             if (game.CurrentTurnPlayerId != playerConnectionId)
@@ -68,7 +72,7 @@ namespace Busi
 
             var newTiles = game.TileBag.DrawTiles(turn.Placements.Count);
             _playerBusi.AddTilesToHand(newTiles, playerConnectionId);
-            _updater.UpdateGroupTurnPlayed(game.GameId.ToString(), );
+            //_updater.UpdateGroupTurnPlayed(game.GameId.ToString(),);
         }
 
         public void SwapTiles(string playerConnectionId, SwapTilesTurnViewModel turn)
