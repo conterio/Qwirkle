@@ -7,6 +7,7 @@ using Models.Enums;
 using Models.EventModels;
 using Models.ViewModels;
 using System;
+using System.Linq;
 
 namespace Busi
 {
@@ -50,8 +51,8 @@ namespace Busi
 
         public void PlayTiles(string playerConnectionId, PlayTilesTurnViewModel turn)
         {
-			//create a turn even which we will return to the group
-			TurnEvent turnEvent = new TurnEvent();
+			//create a turn event which we will return to the group
+			TurnEvent turnEvent = new TurnEvent(); //TODO what are we doing with this turn event?
 
             var game = _gameRepository.GetGame(turn.GameId);
 
@@ -62,7 +63,15 @@ namespace Busi
                 return;
             }
 
-            var validMove = game.GameBoard.AddTiles(turn.Placements);
+            var validMove = _playerBusi.RemoveTilesFromHand(turn.Placements.Select(p => p.Tile).ToList(), playerConnectionId);
+            if (!validMove)
+            {
+                //invalid turn. They are trying to play a tile that wasn't in their hand.
+                _playerBusi.InvalidatePlayer(playerConnectionId);
+            }
+
+            validMove = game.GameBoard.AddTiles(turn.Placements);
+            //TODO get score for tile placements, maybe the return type of AddTiles should be the score?
 
             if(!validMove)
             {

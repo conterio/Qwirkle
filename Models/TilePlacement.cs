@@ -5,6 +5,10 @@ namespace Models
 {
     public class TilePlacement
     {
+        public TilePlacement()
+        {
+
+        }
         public TilePlacement(TilePlacement tilePlacement)
         {
             Tile = tilePlacement.Tile;
@@ -22,7 +26,7 @@ namespace Models
         public (int x, int y) Right => (XCoord + 1, YCoord);
         public IEnumerable<(int x, int y)> Neighbors => new[] { Above, Below, Left, Right };
 
-        public bool IsNeighbor(int x, int y) => 
+        public bool IsNeighbor(int x, int y) =>
             Neighbors.Any(placement => placement.Equals((x, y)));
     }
 }

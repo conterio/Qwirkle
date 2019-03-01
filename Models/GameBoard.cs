@@ -2,6 +2,9 @@ using System;
 using Models;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("UnitTests")]
 
 namespace Qwirkle.Models
 {
@@ -12,7 +15,8 @@ namespace Qwirkle.Models
             _tilePlacements = new List<TilePlacement>();
         }
 
-        List<TilePlacement> _tilePlacements;
+        //This is a list of all the tiles that have been played on the board so far
+        private List<TilePlacement> _tilePlacements;
 
         /// <summary>
         /// Adds tilesPlacements to the game board if they are valid
@@ -42,7 +46,8 @@ namespace Qwirkle.Models
                 {
                     if (tilePlacement.XCoord != 0 && tilePlacement.YCoord != 0)
                     {
-                        //Fist **smack** turn and they are not playing at 0,0
+                        //Fist **smack**
+                        //First turn and they are not playing at 0,0
                         return false;
                     }
                     firstTurn = false;
@@ -172,13 +177,13 @@ namespace Qwirkle.Models
             {
                 //Validate same shape different color
                 //If we find any tiles with a different shape the turn is invalid
-                return tiles.Any(t => t.Shape != tilePlacement.Tile.Shape);
+                return tiles.All(t => t.Shape == tilePlacement.Tile.Shape);
             }
             else
             {
                 //Or validate same color different shape
                 //If we find any tiles with a different color the turn is invalid
-                return tiles.Any(t => t.Color != tilePlacement.Tile.Color);
+                return tiles.All(t => t.Color == tilePlacement.Tile.Color);
             }
         }
 
@@ -194,7 +199,8 @@ namespace Qwirkle.Models
                     //Get tiles to the left
                     do
                     {
-                        var lPlacement = _tilePlacements.SingleOrDefault(tp => tp.XCoord == --xCoordIndex && tp.YCoord == tilePlacement.YCoord);
+                        --xCoordIndex;
+                        var lPlacement = _tilePlacements.SingleOrDefault(tp => tp.XCoord == xCoordIndex && tp.YCoord == tilePlacement.YCoord);
                         if (lPlacement == null)
                             hitEmptyTilePlacement = true;
                         else
@@ -206,7 +212,8 @@ namespace Qwirkle.Models
                     hitEmptyTilePlacement = false;
                     do
                     {
-                        var rPlacement = _tilePlacements.SingleOrDefault(tp => tp.XCoord == ++xCoordIndex && tp.YCoord == tilePlacement.YCoord);
+                        ++xCoordIndex;
+                        var rPlacement = _tilePlacements.SingleOrDefault(tp => tp.XCoord == xCoordIndex && tp.YCoord == tilePlacement.YCoord);
                         if (rPlacement == null)
                             hitEmptyTilePlacement = true;
                         else
@@ -218,7 +225,8 @@ namespace Qwirkle.Models
                     //Get tiles above
                     do
                     {
-                        var uPlacement = _tilePlacements.SingleOrDefault(tp => tp.XCoord == tilePlacement.XCoord && tp.YCoord == ++yCoordIndex);
+                        ++yCoordIndex;
+                        var uPlacement = _tilePlacements.SingleOrDefault(tp => tp.XCoord == tilePlacement.XCoord && tp.YCoord == yCoordIndex);
                         if (uPlacement == null)
                             hitEmptyTilePlacement = true;
                         else
@@ -230,15 +238,14 @@ namespace Qwirkle.Models
                     hitEmptyTilePlacement = false;
                     do
                     {
-                        var dPlacement = _tilePlacements.SingleOrDefault(tp => tp.XCoord == tilePlacement.XCoord && tp.YCoord == --yCoordIndex);
+                        --yCoordIndex;
+                        var dPlacement = _tilePlacements.SingleOrDefault(tp => tp.XCoord == tilePlacement.XCoord && tp.YCoord == yCoordIndex);
                         if (dPlacement == null)
                             hitEmptyTilePlacement = true;
                         else
                             tiles.Add(dPlacement.Tile);
                     } while (hitEmptyTilePlacement == false);
                     break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
             }
 
             return tiles;

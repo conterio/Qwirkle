@@ -8,17 +8,6 @@ namespace UnitTests.Models
 	[TestFixture]
     public class TileBagTests
     {
-		[Test]
-		public void Init()
-		{
-			// Arrange
-
-			// Act
-
-			// Assert
-
-		}
-
 		#region TileBag Constructor
 		[Test]
 		public void TileBag_Constructor_PopulatesWithTiles_Defaults3Copies()
