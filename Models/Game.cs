@@ -1,6 +1,5 @@
 ﻿using Models.Enums;
 using Models.ViewModels;
-using Qwirkle.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,26 +27,49 @@ namespace Models
         public string CurrentTurnPlayerId { get; set; }
         public GameBoard GameBoard { get; set;}
 
-		public GameViewModel GetViewModel(string playerConnectionId)
+        public void NextPlayersTurn()
         {
-            return new GameViewModel()
+            if (Players.Count(p => p.StillPlaying) < 2)
             {
-                GameId = this.GameId,
-                Players = new List<PlayerViewModel>(this.Players.Select(p => p.GetViewModel(playerConnectionId == p.ConnectionId)).ToList()),
-                GameSettings = this.GameSettings,
-                GameStatus = this.Status,
-                CurrentTurnPlayerId = CurrentTurnPlayerId,
-                NumberOfTilesInBag = TileBag.Count()
-            };
+                //Only 1 player playing
+                return;
+            }
+            var player = Players.SingleOrDefault(p => p.ConnectionId == CurrentTurnPlayerId);
+            var index = Players.IndexOf(player);
+            Player nextPlayer;
+            do
+            {
+                if (index == Players.Count)
+                {
+                    index = 0;
+                }
+                else
+                {
+                    ++index;
+                }
+
+                nextPlayer = Players[index];
+                CurrentTurnPlayerId = nextPlayer.ConnectionId;
+            } while (!nextPlayer.StillPlaying);
         }
 
-        public TurnPlayedViewModel GetTurnPlayedViewModel(string playerConnectionId)
+        public bool IsEndOfGame()
         {
-            return new TurnPlayedViewModel
+            if (Players.Count(p => p.StillPlaying) < 2)
             {
-                Player = Players.SingleOrDefault(p => p.ConnectionId == CurrentTurnPlayerId)?.GetViewModel(CurrentTurnPlayerId == playerConnectionId)
-                //TODO
-            };
+                //Only 1 player playing
+                return true;
+            }
+
+            if (TileBag.Count() > 0)
+            {
+                //Still tiles left in bad
+                return false;
+            }
+
+            //Tile bag empty and player plays all tiles in hand
+            var player = Players.SingleOrDefault(p => p.ConnectionId == CurrentTurnPlayerId);
+            return player.CurrentHand.Count == 0;
         }
     }
 }

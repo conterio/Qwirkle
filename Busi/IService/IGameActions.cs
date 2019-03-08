@@ -1,10 +1,13 @@
-﻿using Models.ViewModels;
+﻿using Models.EventModels;
 
 namespace Busi.IService
 {
     public interface IGameActions
     {
-        void SignalGameState(GameViewModel game);
-        void SignalTurnPlayed(TurnPlayedViewModel turnPlayedModel);
+        void LobbyEvent();
+        void TurnEvent(TurnEvent turn);
+        void EndTurnEvent(EndTurnEvent endTurn);
+        void GameStarted();
+        void GameOver();
     }
 }

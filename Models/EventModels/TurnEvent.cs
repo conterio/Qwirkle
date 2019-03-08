@@ -1,11 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Models.EventModels
 {
-	public class TurnEvent
+    public class TurnEvent
 	{
-		public string Message { get; set; }
+        public string CurrentPlayerId { get; set; }
+        public string PreviousPlayerId { get; set; }
+        public List<TilePlacement> TilesPlayed { get; set; }
+        public int Score { get; set; }
+        public bool RemovePlayer { get; set; }
+        public int SwappedTiles { get; set; }
 	}
 }

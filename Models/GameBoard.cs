@@ -1,12 +1,8 @@
 using System;
-using Models;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("UnitTests")]
-
-namespace Qwirkle.Models
+namespace Models
 {
     public class GameBoard
     {
@@ -23,21 +19,24 @@ namespace Qwirkle.Models
         /// </summary>
         /// <param name="tilesPlacements"></param>
         /// <returns>
-        /// Returns true if it's a valid move and all tilesPlacements were added to the board
-        /// Returns false if it's an invalid move. None of the tilesPlacements will be added to the board
+        /// Returns score if it's a valid move and all tilesPlacements were added to the board
+        /// Returns -1 if it's an invalid move. None of the tilesPlacements will be added to the board
         /// </returns>
-        public bool AddTiles(List<TilePlacement> tilesPlacements)
+        public int AddTiles(List<TilePlacement> tilesPlacements)
         {
+            var score = 0;
             //You have to place at least one tile
             if (tilesPlacements == null)
-                return false;
+                return -1;
 
             var firstTurn = !_tilePlacements.Any();
 
-            if (CheckForScatteredPlacement(tilesPlacements))
+            var result = IsScatteredPlacement(tilesPlacements);
+            if (result.isScattered)
             {
-                return false;
+                return -1;
             }
+            var directionOfPlay = result.direction;
 
             var originalTilePlacements = _tilePlacements.Select(tileP => new TilePlacement(tileP)).ToList();
             foreach (var tilePlacement in tilesPlacements)
@@ -48,7 +47,13 @@ namespace Qwirkle.Models
                     {
                         //Fist **smack**
                         //First turn and they are not playing at 0,0
-                        return false;
+                        return -1;
+                    }
+
+                    if (tilesPlacements.Count == 1)
+                    {
+                        //Only playing one tile and it's at 0,0 return a score of 1
+                        return 1;
                     }
                     firstTurn = false;
                 }
@@ -59,7 +64,7 @@ namespace Qwirkle.Models
                     if (!hasNeighbors)
                     {
                         //There were no neighbors, so this is an invalid move
-                        return false;
+                        return -1;
                     }
 
                 }
@@ -70,31 +75,45 @@ namespace Qwirkle.Models
                     {
                         //There was an invalid tilePlacement return the GameBoard to it's original state
                         _tilePlacements = originalTilePlacements.Select(tileP => new TilePlacement(tileP)).ToList();
-                        return false;
+                        return -1;
                     }
                 }
                 _tilePlacements.Add(tilePlacement);
+                //Calculate score for the opposite direction of play
+                var tilesInOppositeDirection = GetTilesInDirection(tilePlacement, OppositeDirection(directionOfPlay));
+                tilesInOppositeDirection.Add(tilePlacement.Tile);
+                score += CalculateScore(tilesInOppositeDirection);
             }
-            return true;
+
+            //Calculate score for the direction of play
+            var tilesInDirectionOfPlay = GetTilesInDirection(tilesPlacements.FirstOrDefault(), directionOfPlay);
+            tilesInDirectionOfPlay.Add(tilesPlacements.FirstOrDefault()?.Tile);
+            score += CalculateScore(tilesInDirectionOfPlay, firstTurn);
+            return score;
         }
 
-        private bool CheckForScatteredPlacement(List<TilePlacement> tilePlacements)
+        private (bool isScattered, DirectionEnum direction) IsScatteredPlacement(List<TilePlacement> tilePlacements)
         {
             if (tilePlacements.Count < 2)
             {
-                return false;
+                //Either direction can be used by default single tile placements are horizontal
+                //got to pick one. Just got to. Can't be none.
+                return (false, DirectionEnum.Horizontal);
             }
+
+            DirectionEnum directionOfPlay;
 
             //check for vertical or horizontal play
             if (tilePlacements[0].XCoord == tilePlacements[1].XCoord)
             {
                 //Vertical play
+                directionOfPlay = DirectionEnum.Vertical;
                 var xIndex = tilePlacements[0].XCoord;
                 //Check if any other tile placements don't share the same XCoord
                 if (tilePlacements.Any(t => t.XCoord != xIndex))
                 {
                     //Not all tiles share the same XCoord
-                    return true;
+                    return (true, default(DirectionEnum));
                 }
 
                 //Make sure all the tiles we are playing are together without any whitespace separating them
@@ -104,19 +123,20 @@ namespace Qwirkle.Models
                         !_tilePlacements.Any(t => t.XCoord == xIndex && t.YCoord == yIndex)) //Check to see if the tile is not on the board
                     {
                         //Invalid move
-                        return true;
+                        return (true, default(DirectionEnum));
                     }
                 }
             }
             else if (tilePlacements[0].YCoord == tilePlacements[1].YCoord)
             {
                 //Horizontal play
+                directionOfPlay = DirectionEnum.Horizontal;
                 //Check if any other tile placements don't share the same YCoord
                 var yIndex = tilePlacements[0].YCoord;
                 if (tilePlacements.Any(t => t.YCoord != yIndex))
                 {
                     //Not all tiles share the same YCoord
-                    return true;
+                    return (true, default(DirectionEnum));
                 }
 
                 //Make sure all the tiles we are playing are together without any whitespace separating them
@@ -126,17 +146,17 @@ namespace Qwirkle.Models
                         !_tilePlacements.Any(t => t.XCoord == xIndex && t.YCoord == yIndex)) //Check to see if the tile is not on the board
                     {
                         //Invalid move
-                        return true;
+                        return (true, default(DirectionEnum));
                     }
                 }
             }
             else
             {
                 //Invalid move
-                return true;
+                return (true, default(DirectionEnum));
             }
 
-            return false;
+            return (false, directionOfPlay);
         }
 
         private bool CheckForNeighbors(List<TilePlacement> tilePlacements, int xCoord, int yCoord)
@@ -194,7 +214,7 @@ namespace Qwirkle.Models
 
             switch (direction)
             {
-                case DirectionEnum.horizontal:
+                case DirectionEnum.Horizontal:
                     var xCoordIndex = tilePlacement.XCoord;
                     //Get tiles to the left
                     do
@@ -220,7 +240,7 @@ namespace Qwirkle.Models
                             tiles.Add(rPlacement.Tile);
                     } while (hitEmptyTilePlacement == false);
                     break;
-                case DirectionEnum.vertical:
+                case DirectionEnum.Vertical:
                     var yCoordIndex = tilePlacement.YCoord;
                     //Get tiles above
                     do
@@ -253,8 +273,35 @@ namespace Qwirkle.Models
 
         private enum DirectionEnum
         {
-            horizontal = 1,
-            vertical = 2
+            None = 0,
+            Horizontal = 1,
+            Vertical = 2
+        }
+
+        private int CalculateScore(List<Tile> tiles, bool firstTurn = false)
+        {
+            if (tiles.Count == 6)
+                //Qwirkle!!!!! **fist** smack
+                return 12;
+            else if (tiles.Count == 1)
+                if (firstTurn)
+                    return 1;
+                else
+                    return 0;
+            else
+                return tiles.Count;
+        }
+
+        private DirectionEnum OppositeDirection(DirectionEnum direction)
+        {
+            if (direction == DirectionEnum.Horizontal)
+            {
+                return DirectionEnum.Vertical;
+            }
+            else
+            {
+                return DirectionEnum.Horizontal;
+            }
         }
     }
 }

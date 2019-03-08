@@ -7,6 +7,7 @@ using Models.Enums;
 using Models.EventModels;
 using Models.ViewModels;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Busi
@@ -35,31 +36,36 @@ namespace Busi
             _shuffleHelper.Shuffle(game.Players);
             game.CurrentTurnPlayerId = game.Players[0].ConnectionId;
 
-            foreach (var player in game.Players)
+            var turnEvent = new TurnEvent
             {
-                player.CurrentHand = game.TileBag.DrawTiles(game.GameSettings.HandSize);
-                _updater.UpdateClient(player.ConnectionId, game.GetViewModel(player.ConnectionId));
-            }
+                CurrentPlayerId = game.CurrentTurnPlayerId,
+                PreviousPlayerId = null,
+                TilesPlayed = null,
+                Score = 0,
+                RemovePlayer = false,
+                SwappedTiles = 0
+            };
+
+            _updater.UpdateGroupTurnEvent(game.GameId.ToString(), turnEvent);
         }
 
         public void AddPlayer(Guid gameId, Player player)
         {
             var game = _gameRepository.GetGame(gameId);
             game.Players.Add(player);
-            _updater.UpdateGroup(game.GameId.ToString(), game.GetViewModel(null));
+            //_updater.UpdateGroup(game.GameId.ToString(), game.GetViewModel(null)); //TODO update group player joined
         }
 
         public void PlayTiles(string playerConnectionId, PlayTilesTurnViewModel turn)
         {
-			//create a turn event which we will return to the group
-			TurnEvent turnEvent = new TurnEvent(); //TODO what are we doing with this turn event?
-
             var game = _gameRepository.GetGame(turn.GameId);
 
             if (game.CurrentTurnPlayerId != playerConnectionId)
             {
                 //Not this players turn, invalidate player
                 _playerBusi.InvalidatePlayer(playerConnectionId);
+                //TODO Check for end of game
+                //TODO Send infoEvent for invalidatingPlayer out of turn
                 return;
             }
 
@@ -70,18 +76,25 @@ namespace Busi
                 _playerBusi.InvalidatePlayer(playerConnectionId);
             }
 
-            validMove = game.GameBoard.AddTiles(turn.Placements);
-            //TODO get score for tile placements, maybe the return type of AddTiles should be the score?
-
-            if(!validMove)
+            var score = game.GameBoard.AddTiles(turn.Placements);
+            if (score == -1)
             {
-                //Invalid move
+                //Invalid move. Player banned.
                 _playerBusi.InvalidatePlayer(playerConnectionId);
+                //TODO Check for end of game
+                StartNextTurn(game, 0, true, null, 0);
+                return;
             }
+
+			_playerBusi.AddScore(score, playerConnectionId);
 
             var newTiles = game.TileBag.DrawTiles(turn.Placements.Count);
             _playerBusi.AddTilesToHand(newTiles, playerConnectionId);
-            //_updater.UpdateGroupTurnPlayed(game.GameId.ToString(),);
+
+            //Send player their new hand
+            _updater.UpdateClientEndTurnEvent(playerConnectionId, new EndTurnEvent { NewTiles = newTiles});
+
+            StartNextTurn(game, score, !validMove, turn.Placements, 0);
         }
 
         public void SwapTiles(string playerConnectionId, SwapTilesTurnViewModel turn)
@@ -91,6 +104,8 @@ namespace Busi
 			if (game.CurrentTurnPlayerId != playerConnectionId)
             {
                 //Not this players turn, invalidate player
+                //TODO Check for end of game
+                //TODO Send infoEvent for invalidatingPlayer out of turn
                 _playerBusi.InvalidatePlayer(playerConnectionId);
                 return;
             }
@@ -100,7 +115,8 @@ namespace Busi
             if (game.TileBag.Count() < turn.TurnedInTiles.Count)
             {
 				_playerBusi.InvalidatePlayer(playerConnectionId);
-				return;
+                StartNextTurn(game, 0, true, null, 0);
+                return;
             }
             var newTiles = game.TileBag.DrawTiles(turn.TurnedInTiles.Count);
 			var validMove = _playerBusi.RemoveTilesFromHand(turn.TurnedInTiles, playerConnectionId);
@@ -112,6 +128,31 @@ namespace Busi
 
             game.TileBag.ReturnTiles(turn.TurnedInTiles);
             _playerBusi.AddTilesToHand(newTiles, playerConnectionId);
+
+            //Send player their new hand
+            _updater.UpdateClientEndTurnEvent(playerConnectionId, new EndTurnEvent { NewTiles = newTiles });
+
+            StartNextTurn(game, 0, false, null, turn.TurnedInTiles.Count);
+        }
+
+        private void StartNextTurn(Game game, int score, bool removePlayer, List<TilePlacement> tilesPlayed, int tilesSwapped)
+        {
+            var currentPlayerConnectionId = game.CurrentTurnPlayerId;
+
+            //Figure out who goes next
+            game.NextPlayersTurn();
+
+            //Update group of turn
+            var turnEvent = new TurnEvent
+            {
+                CurrentPlayerId = game.CurrentTurnPlayerId,
+                PreviousPlayerId = currentPlayerConnectionId,
+                TilesPlayed = tilesPlayed,
+                Score = score,
+                RemovePlayer = removePlayer,
+                SwappedTiles = tilesSwapped
+            };
+            _updater.UpdateGroupTurnEvent(game.GameId.ToString(), turnEvent);
         }
     }
 }

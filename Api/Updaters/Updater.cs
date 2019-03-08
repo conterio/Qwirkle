@@ -1,6 +1,7 @@
 ﻿using Busi.IService;
 using Busi.IUpdater;
 using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
 
 namespace Api.Updaters
 {
@@ -12,19 +13,14 @@ namespace Api.Updaters
         {
             _hubContext = hubContext;
         }
-        public void UpdateGroup(string groupId, object payload)
+        public void UpdateGroupTurnEvent(string groupId, object payload)
         {
-            _hubContext.Clients.Group(groupId).SendAsync(nameof(IGameActions.SignalGameState), payload);
+            _hubContext.Clients.Group(groupId).SendAsync(nameof(IGameActions.TurnEvent), JsonConvert.SerializeObject(payload));
         }
 
-		public void UpdateGroupTurnPlayed(string groupId, object payload)
-		{
-			_hubContext.Clients.Group(groupId).SendAsync(nameof(IGameActions.SignalTurnPlayed), payload);
-		}
-
-        public void UpdateClient(string connectionId, object payload)
+        public void UpdateClientEndTurnEvent(string connectionId, object payload)
         {
-
+            _hubContext.Clients.Client(connectionId).SendAsync(nameof(IGameActions.EndTurnEvent), JsonConvert.SerializeObject(payload));
         }
     }
 }

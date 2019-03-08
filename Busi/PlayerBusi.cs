@@ -51,5 +51,11 @@ namespace Busi
             var player = _playerRepository.GetPlayer(playerConnectionId);
             player.CurrentHand.AddRange(tiles);
         }
-	}
+
+        public void AddScore(int score, string playerConnectionId)
+        {
+			var player = _playerRepository.GetPlayer(playerConnectionId);
+			player.Score += score;
+        }
+    }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using Models;
 using NUnit.Framework;
-using Qwirkle.Models;
 
 namespace UnitTests.Models
 {
@@ -17,10 +16,10 @@ namespace UnitTests.Models
             var gameBoard = new GameBoard();
 
             //Act
-            var tilesAdded = gameBoard.AddTiles(null);
+            var score = gameBoard.AddTiles(null);
 
             //Assert
-            Assert.IsFalse(tilesAdded);
+            Assert.AreEqual(-1, score);;
         }
 
         [Test]
@@ -34,10 +33,27 @@ namespace UnitTests.Models
             };
 
             //Act
-            var tilesAdded = gameBoard.AddTiles(tilePlacements);
+            var score = gameBoard.AddTiles(tilePlacements);
 
             //Assert
-            Assert.IsFalse(tilesAdded);
+            Assert.AreEqual(-1, score);;
+        }
+
+        [Test]
+        public void FirstTurnSingleTile_GameBoard_ValidMove()
+        {
+            //Arrange
+            var gameBoard = new GameBoard();
+            var tilePlacements = new List<TilePlacement>
+            {
+                new TilePlacement {YCoord = 0, XCoord = 0, Tile = new Tile(Color.blue, Shape.circle)}
+            };
+
+            //Act
+            var score = gameBoard.AddTiles(tilePlacements);
+
+            //Assert
+            Assert.AreEqual(1, score);
         }
 
         [Test]
@@ -52,10 +68,10 @@ namespace UnitTests.Models
             };
 
             //Act
-            var tilesAdded = gameBoard.AddTiles(tilePlacements);
+            var score = gameBoard.AddTiles(tilePlacements);
 
             //Assert
-            Assert.IsFalse(tilesAdded);
+            Assert.AreEqual(-1, score);
         }
 
         [Test]
@@ -72,10 +88,10 @@ namespace UnitTests.Models
             };
 
             //Act
-            var tilesAdded = gameBoard.AddTiles(tilePlacements);
+            var score = gameBoard.AddTiles(tilePlacements);
 
             //Assert
-            Assert.IsFalse(tilesAdded);
+            Assert.AreEqual(-1, score);
         }
 
         [Test]
@@ -92,10 +108,10 @@ namespace UnitTests.Models
             };
 
             //Act
-            var tilesAdded = gameBoard.AddTiles(tilePlacements);
+            var score = gameBoard.AddTiles(tilePlacements);
 
             //Assert
-            Assert.IsFalse(tilesAdded);
+            Assert.AreEqual(-1, score);
         }
 
         [Test]
@@ -108,14 +124,14 @@ namespace UnitTests.Models
                 new TilePlacement {YCoord = 0, XCoord = 0, Tile = new Tile(Color.blue, Shape.circle)},
                 new TilePlacement {YCoord = 0, XCoord = 1, Tile = new Tile(Color.blue, Shape.square)},
             };
-            var tilesAdded = gameBoard.AddTiles(tilePlacements);
-            Assert.IsTrue(tilesAdded);
+            var score = gameBoard.AddTiles(tilePlacements);
+            Assert.AreEqual(2, score);
 
             //Act
-            tilesAdded = gameBoard.AddTiles(tilePlacements);
+            score = gameBoard.AddTiles(tilePlacements);
 
             //Assert
-            Assert.IsFalse(tilesAdded);
+            Assert.AreEqual(-1, score );
         }
 
         [Test]
@@ -130,10 +146,10 @@ namespace UnitTests.Models
             };
 
             //Act
-            var tilesAdded = gameBoard.AddTiles(tilePlacements);
+            var score = gameBoard.AddTiles(tilePlacements);
 
             //Assert
-            Assert.IsFalse(tilesAdded);
+            Assert.AreEqual(-1, score);
         }
 
         [Test]
@@ -152,10 +168,10 @@ namespace UnitTests.Models
             };
 
             //Act
-            var tilesAdded = gameBoard.AddTiles(tilePlacements);
+            var score = gameBoard.AddTiles(tilePlacements);
 
             //Assert
-            Assert.IsTrue(tilesAdded);
+            Assert.AreEqual(12, score);
         }
 
         [Test]
@@ -174,10 +190,10 @@ namespace UnitTests.Models
             };
 
             //Act
-            var tilesAdded = gameBoard.AddTiles(tilePlacements);
+            var score = gameBoard.AddTiles(tilePlacements);
 
             //Assert
-            Assert.IsTrue(tilesAdded);
+            Assert.AreEqual(12, score);
         }
 
         [Test]
@@ -192,7 +208,7 @@ namespace UnitTests.Models
                 new TilePlacement {YCoord = 1, XCoord = 0, Tile = new Tile(Color.red, Shape.square)},
                 new TilePlacement {YCoord = 2, XCoord = 0, Tile = new Tile(Color.red, Shape.clover)}
             };
-            Assert.IsTrue(gameBoard.AddTiles(tilePlacements));
+            Assert.AreEqual(3, gameBoard.AddTiles(tilePlacements));
 
             //Go Right
             tilePlacements = new List<TilePlacement>
@@ -200,7 +216,7 @@ namespace UnitTests.Models
                 new TilePlacement {YCoord = 2, XCoord = 1, Tile = new Tile(Color.blue, Shape.clover)},
                 new TilePlacement {YCoord = 2, XCoord = 2, Tile = new Tile(Color.green, Shape.clover)}
             };
-            Assert.IsTrue(gameBoard.AddTiles(tilePlacements));
+            Assert.AreEqual(3, gameBoard.AddTiles(tilePlacements));
 
             //Go Up again
             tilePlacements = new List<TilePlacement>
@@ -208,21 +224,21 @@ namespace UnitTests.Models
                 new TilePlacement {YCoord = 3, XCoord = 2, Tile = new Tile(Color.green, Shape.square)},
                 new TilePlacement {YCoord = 4, XCoord = 2, Tile = new Tile(Color.green, Shape.diamond)}
             };
-            Assert.IsTrue(gameBoard.AddTiles(tilePlacements));
+            Assert.AreEqual(3, gameBoard.AddTiles(tilePlacements));
 
             //Go Left
             tilePlacements = new List<TilePlacement>
             {
                 new TilePlacement {YCoord = 4, XCoord = 1, Tile = new Tile(Color.purple, Shape.diamond)}
             };
-            Assert.IsTrue(gameBoard.AddTiles(tilePlacements));
+            Assert.AreEqual(2, gameBoard.AddTiles(tilePlacements));
 
             tilePlacements = new List<TilePlacement>
             {
                 new TilePlacement {YCoord = 4, XCoord = 0, Tile = new Tile(Color.red, Shape.diamond)},
                 new TilePlacement {YCoord = 5, XCoord = 0, Tile = new Tile(Color.red, Shape.star)}
             };
-            Assert.IsTrue(gameBoard.AddTiles(tilePlacements));
+            Assert.AreEqual(5, gameBoard.AddTiles(tilePlacements));
 
             tilePlacements = new List<TilePlacement>
             {
@@ -230,10 +246,10 @@ namespace UnitTests.Models
             };
 
             //Act
-            var tilesAdded = gameBoard.AddTiles(tilePlacements);
+            var score = gameBoard.AddTiles(tilePlacements);
 
             //Assert
-            Assert.IsTrue(tilesAdded);
+            Assert.AreEqual(12, score);
         }
 
         [Test]
@@ -248,7 +264,7 @@ namespace UnitTests.Models
                 new TilePlacement {YCoord = 1, XCoord = 0, Tile = new Tile(Color.red, Shape.square)},
                 new TilePlacement {YCoord = 2, XCoord = 0, Tile = new Tile(Color.red, Shape.clover)}
             };
-            Assert.IsTrue(gameBoard.AddTiles(tilePlacements));
+            Assert.AreEqual(3, gameBoard.AddTiles(tilePlacements));
 
             //Go Right
             tilePlacements = new List<TilePlacement>
@@ -256,7 +272,7 @@ namespace UnitTests.Models
                 new TilePlacement {YCoord = 2, XCoord = 1, Tile = new Tile(Color.blue, Shape.clover)},
                 new TilePlacement {YCoord = 2, XCoord = 2, Tile = new Tile(Color.green, Shape.clover)}
             };
-            Assert.IsTrue(gameBoard.AddTiles(tilePlacements));
+            Assert.AreEqual(3, gameBoard.AddTiles(tilePlacements));
 
             //Go Up again
             tilePlacements = new List<TilePlacement>
@@ -264,38 +280,37 @@ namespace UnitTests.Models
                 new TilePlacement {YCoord = 3, XCoord = 2, Tile = new Tile(Color.green, Shape.square)},
                 new TilePlacement {YCoord = 4, XCoord = 2, Tile = new Tile(Color.green, Shape.diamond)}
             };
-            Assert.IsTrue(gameBoard.AddTiles(tilePlacements));
+            Assert.AreEqual(3, gameBoard.AddTiles(tilePlacements));
 
             //Go Left
             tilePlacements = new List<TilePlacement>
             {
                 new TilePlacement {YCoord = 4, XCoord = 1, Tile = new Tile(Color.purple, Shape.diamond)}
             };
-            Assert.IsTrue(gameBoard.AddTiles(tilePlacements));
+            Assert.AreEqual(2, gameBoard.AddTiles(tilePlacements));
 
-            //Go Up
+            //Go Left
             tilePlacements = new List<TilePlacement>
             {
-                new TilePlacement {YCoord = 4, XCoord = 0, Tile = new Tile(Color.red, Shape.diamond)},
-                new TilePlacement {YCoord = 5, XCoord = 0, Tile = new Tile(Color.red, Shape.star)}
+                new TilePlacement {YCoord = 4, XCoord = 0, Tile = new Tile(Color.red, Shape.diamond)}
             };
-            Assert.IsTrue(gameBoard.AddTiles(tilePlacements));
+            Assert.AreEqual(3, gameBoard.AddTiles(tilePlacements));
 
             //Scattered Placement in Same Column
             tilePlacements = new List<TilePlacement>
             {
                 new TilePlacement {YCoord = -1, XCoord = 0, Tile = new Tile(Color.red, Shape.cross)},
-                new TilePlacement {YCoord = 6, XCoord = 0, Tile = new Tile(Color.red, Shape.circle)}
+                new TilePlacement {YCoord = 5, XCoord = 0, Tile = new Tile(Color.red, Shape.star)}
             };
             //Act
-            var tilesAdded = gameBoard.AddTiles(tilePlacements);
+            var score = gameBoard.AddTiles(tilePlacements);
 
             //Assert
-            Assert.IsFalse(tilesAdded);
+            Assert.AreEqual(-1, score);
         }
 
         [Test]
-        public void ScatteredSameRow_GameBoard_InvalidMove()
+        public void ScatteredPlacementSameRow_GameBoard_InvalidMove()
         {
             //Arrange
             var gameBoard = new GameBoard();
@@ -306,7 +321,7 @@ namespace UnitTests.Models
                 new TilePlacement {YCoord = 0, XCoord = 1, Tile = new Tile(Color.red, Shape.square)},
                 new TilePlacement {YCoord = 0, XCoord = 2, Tile = new Tile(Color.red, Shape.clover)}
             };
-            Assert.IsTrue(gameBoard.AddTiles(tilePlacements));
+            Assert.AreEqual(3, gameBoard.AddTiles(tilePlacements));
 
             //Go Up
             tilePlacements = new List<TilePlacement>
@@ -314,7 +329,7 @@ namespace UnitTests.Models
                 new TilePlacement {YCoord = 1, XCoord = 2, Tile = new Tile(Color.blue, Shape.clover)},
                 new TilePlacement {YCoord = 2, XCoord = 2, Tile = new Tile(Color.green, Shape.clover)}
             };
-            Assert.IsTrue(gameBoard.AddTiles(tilePlacements));
+            Assert.AreEqual(3, gameBoard.AddTiles(tilePlacements));
 
             //Go Right again
             tilePlacements = new List<TilePlacement>
@@ -322,34 +337,33 @@ namespace UnitTests.Models
                 new TilePlacement {YCoord = 2, XCoord = 3, Tile = new Tile(Color.green, Shape.square)},
                 new TilePlacement {YCoord = 2, XCoord = 4, Tile = new Tile(Color.green, Shape.diamond)}
             };
-            Assert.IsTrue(gameBoard.AddTiles(tilePlacements));
+            Assert.AreEqual(3, gameBoard.AddTiles(tilePlacements));
 
             //Go Down
             tilePlacements = new List<TilePlacement>
             {
                 new TilePlacement {YCoord = 1, XCoord = 4, Tile = new Tile(Color.purple, Shape.diamond)}
             };
-            Assert.IsTrue(gameBoard.AddTiles(tilePlacements));
+            Assert.AreEqual(2, gameBoard.AddTiles(tilePlacements));
 
             //Go Right
             tilePlacements = new List<TilePlacement>
             {
-                new TilePlacement {YCoord = 0, XCoord = 4, Tile = new Tile(Color.red, Shape.diamond)},
-                new TilePlacement {YCoord = 0, XCoord = 5, Tile = new Tile(Color.red, Shape.star)}
+                new TilePlacement {YCoord = 0, XCoord = 4, Tile = new Tile(Color.red, Shape.diamond)}
             };
-            Assert.IsTrue(gameBoard.AddTiles(tilePlacements));
+            Assert.AreEqual(3, gameBoard.AddTiles(tilePlacements));
 
             //Scattered Placement in Same Row
             tilePlacements = new List<TilePlacement>
             {
                 new TilePlacement {YCoord = 0, XCoord = -1, Tile = new Tile(Color.red, Shape.cross)},
-                new TilePlacement {YCoord = 0, XCoord = 6, Tile = new Tile(Color.red, Shape.circle)}
+                new TilePlacement {YCoord = 0, XCoord = 5, Tile = new Tile(Color.red, Shape.star)}
             };
             //Act
-            var tilesAdded = gameBoard.AddTiles(tilePlacements);
+            var score = gameBoard.AddTiles(tilePlacements);
 
             //Assert
-            Assert.IsFalse(tilesAdded);
+            Assert.AreEqual(-1, score);
         }
 
         [Test]
@@ -366,7 +380,7 @@ namespace UnitTests.Models
                 new TilePlacement {YCoord = 0, XCoord = 4, Tile = new Tile(Color.red, Shape.circle)},
                 new TilePlacement {YCoord = 0, XCoord = 5, Tile = new Tile(Color.yellow, Shape.circle)}
             };
-            Assert.IsTrue(gameBoard.AddTiles(tilePlacements));
+            Assert.AreEqual(12, gameBoard.AddTiles(tilePlacements));
 
             tilePlacements = new List<TilePlacement>
             {
@@ -374,10 +388,10 @@ namespace UnitTests.Models
             };
 
             //Act
-            var tilesAdded = gameBoard.AddTiles(tilePlacements);
+            var score = gameBoard.AddTiles(tilePlacements);
 
             //Assert
-            Assert.IsFalse(tilesAdded);
+            Assert.AreEqual(-1, score);
         }
     }
 }

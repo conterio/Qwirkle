@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Models.ViewModels;
 
 namespace Models
 {
@@ -18,22 +17,5 @@ namespace Models
         public bool IsHumanPlayer { get; set; }
         public bool IsSpectator { get; set; }
 		public bool StillPlaying { get; set; }
-
-		public PlayerViewModel GetViewModel(bool includeHand)
-        {
-            var playerViewModel = new PlayerViewModel()
-            {
-                Score = this.Score,
-                Name = this.Name,
-                IsHumanPlayer = this.IsHumanPlayer
-            };
-
-            if (includeHand)
-            {
-                playerViewModel.CurrentHand = this.CurrentHand;
-            }
-
-            return playerViewModel;
-        }
     }
 }
