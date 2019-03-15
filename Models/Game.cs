@@ -1,5 +1,5 @@
 ﻿using Models.Enums;
-using Models.ViewModels;
+using Models.ClientCommands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -68,8 +68,8 @@ namespace Models
             }
 
             //Tile bag empty and player plays all tiles in hand
-            var player = Players.SingleOrDefault(p => p.ConnectionId == CurrentTurnPlayerId);
-            return player.CurrentHand.Count == 0;
+            var player = Players.SingleOrDefault(p => p.ConnectionId == CurrentTurnPlayerId && p.StillPlaying);
+            return player?.CurrentHand.Count == 0;
         }
     }
 }

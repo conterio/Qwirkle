@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Models.ViewModels
+namespace Models.ClientCommands
 {
-    public class PlayTilesTurnViewModel
+    public class PlayTilesTurn
     {
         public Guid GameId;
         public List<TilePlacement> Placements;

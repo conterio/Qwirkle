@@ -5,7 +5,6 @@ using Busi.Helpers;
 using Busi.IBusi;
 using Busi.IRepo;
 using Busi.IService;
-using Busi.IUpdater;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;

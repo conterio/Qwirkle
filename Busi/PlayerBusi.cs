@@ -4,21 +4,29 @@ using System.Collections.Generic;
 using System.Text;
 using Busi.IRepo;
 using Models;
+using Models.EventModels;
 
 namespace Busi
 {
 	public class PlayerBusi : IPlayerBusi
 	{
 		private readonly IPlayerRepository _playerRepository;
+		private readonly IUpdater _updater;
 
-		public PlayerBusi(IPlayerRepository playerRepository)
+		public PlayerBusi(IPlayerRepository playerRepository, IUpdater updater)
         {
 			_playerRepository = playerRepository;
+			_updater = updater;
 		}
-		public void InvalidatePlayer(string connectionId)
+		public void InvalidatePlayer(string connectionId, string groupId)
 		{
-            var player = _playerRepository.GetPlayer(connectionId);
-            player.StillPlaying = false;
+			var player = _playerRepository.GetPlayer(connectionId);
+			player.StillPlaying = false;
+			_updater.PlayerRemoveEvent(groupId, new PlayerRemovedEvent()
+			{
+				CurrentPlayerId = connectionId
+			});
+
 		}
 
         /// <summary>

@@ -1,11 +1,10 @@
 ﻿using Busi.Helpers;
 using Busi.IBusi;
 using Busi.IRepo;
-using Busi.IService;
 using Models;
 using Models.Enums;
 using Models.EventModels;
-using Models.ViewModels;
+using Models.ClientCommands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,10 +16,10 @@ namespace Busi
         private readonly IGameRepository _gameRepository;
         private readonly IPlayerRepository _playerRepository;
         private readonly IShuffleHelper _shuffleHelper;
-        private readonly IUpdater.IUpdater _updater;
+        private readonly IUpdater _updater;
 		private readonly IPlayerBusi _playerBusi;
 
-        public GameBusi(IGameRepository gameRepository, IPlayerRepository playerRepository, IShuffleHelper shuffleHelper, IUpdater.IUpdater updater, IPlayerBusi playerBusi)
+        public GameBusi(IGameRepository gameRepository, IPlayerRepository playerRepository, IShuffleHelper shuffleHelper, IUpdater updater, IPlayerBusi playerBusi)
         {
             _gameRepository = gameRepository;
             _playerRepository = playerRepository;
@@ -36,36 +35,43 @@ namespace Busi
             _shuffleHelper.Shuffle(game.Players);
             game.CurrentTurnPlayerId = game.Players[0].ConnectionId;
 
-            var turnEvent = new TurnEvent
+            var startGameEvent = new StartGameEvent
             {
                 CurrentPlayerId = game.CurrentTurnPlayerId,
-                PreviousPlayerId = null,
-                TilesPlayed = null,
-                Score = 0,
-                RemovePlayer = false,
-                SwappedTiles = 0
+                PlayerOrder = game.Players.Select(p => p.ConnectionId).ToList()
             };
 
-            _updater.UpdateGroupTurnEvent(game.GameId.ToString(), turnEvent);
+            _updater.StartGameEvent(game.GameId.ToString(), startGameEvent);
         }
 
         public void AddPlayer(Guid gameId, Player player)
         {
+            var playerJoinedEvent = new PlayerJoinedEvent
+			{
+				Name = player.Name,
+				PlayerId = player.ConnectionId
+			};
+            _updater.PlayerJoinedGameLobbyEvent(gameId.ToString(), playerJoinedEvent);
             var game = _gameRepository.GetGame(gameId);
             game.Players.Add(player);
-            //_updater.UpdateGroup(game.GameId.ToString(), game.GetViewModel(null)); //TODO update group player joined
+            var players = game.Players.Select(p => (p.ConnectionId, p.Name)).ToList();
+            var gameInfoEvent = new GameInfoEvent
+            {
+                Players = players,
+                GameSettings = game.GameSettings
+            };
+            _updater.GameInfoEvent(player.ConnectionId, gameInfoEvent);
         }
 
-        public void PlayTiles(string playerConnectionId, PlayTilesTurnViewModel turn)
+        public void PlayTiles(string playerConnectionId, PlayTilesTurn turn)
         {
             var game = _gameRepository.GetGame(turn.GameId);
 
             if (game.CurrentTurnPlayerId != playerConnectionId)
             {
                 //Not this players turn, invalidate player
-                _playerBusi.InvalidatePlayer(playerConnectionId);
-                //TODO Check for end of game
-                //TODO Send infoEvent for invalidatingPlayer out of turn
+                _playerBusi.InvalidatePlayer(playerConnectionId, game.GameId.ToString());
+				IsEndOfGame(game);
                 return;
             }
 
@@ -73,15 +79,17 @@ namespace Busi
             if (!validMove)
             {
                 //invalid turn. They are trying to play a tile that wasn't in their hand.
-                _playerBusi.InvalidatePlayer(playerConnectionId);
+                _playerBusi.InvalidatePlayer(playerConnectionId, game.GameId.ToString());
+                IsEndOfGame(game);
             }
 
             var score = game.GameBoard.AddTiles(turn.Placements);
             if (score == -1)
             {
                 //Invalid move. Player banned.
-                _playerBusi.InvalidatePlayer(playerConnectionId);
-                //TODO Check for end of game
+                _playerBusi.InvalidatePlayer(playerConnectionId, game.GameId.ToString());
+                if (IsEndOfGame(game))
+                    return;
                 StartNextTurn(game, 0, true, null, 0);
                 return;
             }
@@ -91,22 +99,26 @@ namespace Busi
             var newTiles = game.TileBag.DrawTiles(turn.Placements.Count);
             _playerBusi.AddTilesToHand(newTiles, playerConnectionId);
 
+            if (IsEndOfGame(game))
+            {
+                return;
+            }
+
             //Send player their new hand
             _updater.UpdateClientEndTurnEvent(playerConnectionId, new EndTurnEvent { NewTiles = newTiles});
 
             StartNextTurn(game, score, !validMove, turn.Placements, 0);
         }
 
-        public void SwapTiles(string playerConnectionId, SwapTilesTurnViewModel turn)
+        public void SwapTiles(string playerConnectionId, SwapTilesTurn turn)
         {
             var game = _gameRepository.GetGame(turn.GameId);
 
 			if (game.CurrentTurnPlayerId != playerConnectionId)
             {
                 //Not this players turn, invalidate player
-                //TODO Check for end of game
-                //TODO Send infoEvent for invalidatingPlayer out of turn
-                _playerBusi.InvalidatePlayer(playerConnectionId);
+                IsEndOfGame(game);
+                _playerBusi.InvalidatePlayer(playerConnectionId, game.GameId.ToString());
                 return;
             }
 
@@ -114,7 +126,9 @@ namespace Busi
             //there are in the bag That is an invalid move.
             if (game.TileBag.Count() < turn.TurnedInTiles.Count)
             {
-				_playerBusi.InvalidatePlayer(playerConnectionId);
+				_playerBusi.InvalidatePlayer(playerConnectionId, game.GameId.ToString());
+                if (IsEndOfGame(game))
+                    return;
                 StartNextTurn(game, 0, true, null, 0);
                 return;
             }
@@ -123,8 +137,10 @@ namespace Busi
 			if(!validMove)
 			{
 				//invalid turn. They are trying to turn in a tile that wasn't in their hand.
-				_playerBusi.InvalidatePlayer(playerConnectionId);
-			}
+				_playerBusi.InvalidatePlayer(playerConnectionId, game.GameId.ToString());
+                IsEndOfGame(game);
+                return;
+            }
 
             game.TileBag.ReturnTiles(turn.TurnedInTiles);
             _playerBusi.AddTilesToHand(newTiles, playerConnectionId);
@@ -154,5 +170,21 @@ namespace Busi
             };
             _updater.UpdateGroupTurnEvent(game.GameId.ToString(), turnEvent);
         }
-    }
+
+        private bool IsEndOfGame(Game game)
+        {
+            if (game.IsEndOfGame())
+            {
+                game.Status = GameStatus.GameEnded;
+                //TODO create closeGame repo method that stores a replay in DB and cleans up memory (remove game from game repo)
+                var endGameEvent = new EndGameEvent
+                {
+                    Scores = game.Players.Select(p => (p.Name, p.Score)).ToList()
+                };
+                _updater.EndGameEvent(game.GameId.ToString(),endGameEvent);
+                return true;
+            }
+			return false;
+        }
+	}
 }

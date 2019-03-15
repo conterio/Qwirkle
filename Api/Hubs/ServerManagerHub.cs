@@ -3,7 +3,7 @@ using Busi.IRepo;
 using Busi.IService;
 using Microsoft.AspNetCore.SignalR;
 using Models;
-using Models.ViewModels;
+using Models.ClientCommands;
 using System;
 using System.Collections.Generic;
 
@@ -81,12 +81,12 @@ namespace Api
             _gameBusi.StartGame(gameId);
         }
 
-        public void PlayTiles(PlayTilesTurnViewModel turn)
+        public void PlayTiles(PlayTilesTurn turn)
         {
             _gameBusi.PlayTiles(Context.ConnectionId, turn);
         }
 
-        public void SwapTiles(SwapTilesTurnViewModel turn)
+        public void SwapTiles(SwapTilesTurn turn)
         {
             _gameBusi.SwapTiles(Context.ConnectionId, turn);
         }

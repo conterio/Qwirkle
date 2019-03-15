@@ -1,5 +1,5 @@
 ﻿using Models;
-using Models.ViewModels;
+using Models.ClientCommands;
 using System;
 
 namespace Busi.IBusi
@@ -8,7 +8,7 @@ namespace Busi.IBusi
 	{
 		void StartGame(Guid gameId);
 	    void AddPlayer(Guid gameId, Player player);
-        void PlayTiles(string playerConnectionId, PlayTilesTurnViewModel turn);
-        void SwapTiles(string playerConnectionId, SwapTilesTurnViewModel turn);
+        void PlayTiles(string playerConnectionId, PlayTilesTurn turn);
+        void SwapTiles(string playerConnectionId, SwapTilesTurn turn);
     }
 }

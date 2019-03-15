@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Models.ViewModels
+namespace Models.ClientCommands
 {
-    public class SwapTilesTurnViewModel
+    public class SwapTilesTurn
     {
         public Guid GameId;
         public List<Tile> TurnedInTiles { get; set; }

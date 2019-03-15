@@ -1,10 +1,10 @@
-﻿using Models.ViewModels;
+﻿using Models.ClientCommands;
 
 namespace Busi.IService
 {
     public interface IGameManager
     {
-        void PlayTiles(PlayTilesTurnViewModel turn);
-        void SwapTiles(SwapTilesTurnViewModel turn);
+        void PlayTiles(PlayTilesTurn turn);
+        void SwapTiles(SwapTilesTurn turn);
     }
 }

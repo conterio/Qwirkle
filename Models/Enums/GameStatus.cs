@@ -7,6 +7,7 @@ namespace Models.Enums
     public enum GameStatus
     {
         Lobby,
-        InProgress
+        InProgress,
+		GameEnded
     }
 }
