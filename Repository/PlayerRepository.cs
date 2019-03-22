@@ -15,12 +15,12 @@ namespace Repository
 
         private ConcurrentDictionary<string, Player> Players { get; set; }
 
-        public void AddPlayer(string connectionId, string playerName, bool isAIPlayer)
+        public void AddPlayer(string connectionId, string playerName, bool isHumanPlayer)
         {
 			//TODO are we adding a human or computer player
 			var player = new Player()
 			{
-				IsHumanPlayer = !isAIPlayer,
+				IsHumanPlayer = isHumanPlayer,
                 ConnectionId = connectionId,
                 Name = playerName
             };
