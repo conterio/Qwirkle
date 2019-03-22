@@ -28,6 +28,16 @@ namespace Busi
             _playerBusi = playerBusi;
         }
 
+        public Game CreateGame(GameSettings settings)
+        {
+            return _gameRepository.CreateGame(settings);
+        }
+
+        public List<Game> GetLobbies()
+        {
+            return _gameRepository.GetLobbies();
+        }
+
         public void StartGame(Guid gameId)
         {
             var game = _gameRepository.GetGame(gameId);
@@ -44,8 +54,9 @@ namespace Busi
             _updater.StartGameEvent(game.GameId.ToString(), startGameEvent);
         }
 
-        public void AddPlayer(Guid gameId, Player player)
+        public void AddPlayer(Guid gameId, string playerConnectionId)
         {
+            var player = _playerRepository.GetPlayer(playerConnectionId);
             var playerJoinedEvent = new PlayerJoinedEvent
 			{
 				Name = player.Name,

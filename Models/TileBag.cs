@@ -30,7 +30,10 @@ namespace Models
 
         public List<Tile> DrawTiles(int numberOfTiles)
         {
-            //TODO take upto the number of tiles left in the bag
+            //Draw up to the number of tiles in the bag
+            if (numberOfTiles > Tiles.Count)
+                numberOfTiles = Tiles.Count;
+
             var drawnTiles = Tiles.Take(numberOfTiles).ToList();
             Tiles.RemoveRange(0, drawnTiles.Count);
             return drawnTiles;

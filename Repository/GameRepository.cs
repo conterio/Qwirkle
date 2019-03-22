@@ -24,9 +24,11 @@ namespace Repository
 
         public Game CreateGame(GameSettings gameSettings)
         {
-            gameSettings.GameId = Guid.NewGuid();
-            var game = new Game() { GameSettings = gameSettings };
-            Games.AddOrUpdate(gameSettings.GameId, game, (_, __) => game);
+            //TODO we could be creating games that never get cleaned up.
+            //TODO we should add the host to the game
+            //TODO add a way for players to leave the game and clean up game if there is no one left in the game
+            var game = new Game {GameSettings = gameSettings, GameId = Guid.NewGuid()};
+            Games.AddOrUpdate(game.GameId, game, (_, __) => game);
             return game;
         }
 

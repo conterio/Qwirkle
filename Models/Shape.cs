@@ -1,6 +1,5 @@
-﻿using System;
-
-namespace Models 
+﻿
+namespace Models
 {
     public enum Shape
     {

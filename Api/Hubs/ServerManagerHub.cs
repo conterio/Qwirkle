@@ -12,23 +12,21 @@ namespace Api
     public class ServerManagerHub : Hub, IServerManager, ILobbyManager, IGameManager
     {
         private readonly IPlayerRepository _playerRepository;
-        private readonly IGameRepository _gameRepository;
         private readonly IGameBusi _gameBusi;
 
         public ServerManagerHub(IPlayerRepository playerRepository,
             IGameRepository gameRepository,
             IGameBusi gameBusi)
         {
-            _playerRepository = playerRepository;
-            _gameRepository = gameRepository;
+            _playerRepository = playerRepository; //TODO remove player repository or make it a singleton
             _gameBusi = gameBusi;
         }
 
-        public bool SignalAddPlayer(Guid gameId, Player player)
+        public bool SignalAddPlayer(Guid gameId, string playerConnectionId)
         {
             try
             {
-                Clients.Client(player.ConnectionId).SendAsync(nameof(IAIManager.JoinGame), gameId).GetAwaiter().GetResult();
+                Clients.Client(playerConnectionId).SendAsync(nameof(IAIManager.JoinGame), gameId).GetAwaiter().GetResult();
                 return true;
             }
             catch (Exception)
@@ -39,25 +37,33 @@ namespace Api
 
         public List<Game> AvailableGames()
         {
-            return _gameRepository.GetLobbies();
+            //TODO do we want to return the whole game object?
+            return _gameBusi.GetLobbies();
         }
 
         public Game CreateGame(GameSettings settings)
         {
-            return _gameRepository.CreateGame(settings);
+            //TODO do we want to return the whole game object?
+            var game = _gameBusi.CreateGame(settings);
+            if (!JoinGame(game.GameId, Context.ConnectionId))
+            {
+                //TODO if we don't join the game should we delete it and fail the call?
+            }
+            return game;
         }
 
         public List<Player> GetAvailablePlayers()
         {
+            //TODO do we want to return the whole player object?
             return _playerRepository.GetAllPlayers();
         }
 
-        public bool JoinGame(Guid gameId, Player player)
+        public bool JoinGame(Guid gameId, string playerConnectionId)
         {
             try
             {
-                _gameBusi.AddPlayer(gameId, player);
-                Groups.AddToGroupAsync(player.ConnectionId, gameId.ToString()).GetAwaiter().GetResult();
+                _gameBusi.AddPlayer(gameId, playerConnectionId);
+                Groups.AddToGroupAsync(playerConnectionId, gameId.ToString()).GetAwaiter().GetResult();
                 return true;
             }
             catch (Exception)

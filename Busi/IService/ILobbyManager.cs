@@ -6,9 +6,9 @@ namespace Busi.IService
 {
     public interface ILobbyManager
     {
-        bool JoinGame(Guid gameId, Player player);
+        bool JoinGame(Guid gameId, string playerConnectionId);
         void StartGame(Guid gameId);
-        bool SignalAddPlayer(Guid gameId, Player player);
+        bool SignalAddPlayer(Guid gameId, string playerConnectionId);
         List<Player> GetAvailablePlayers();
     }
 }
