@@ -5,7 +5,7 @@ namespace Busi.IService
 {
     public interface IServerManager
     {
-        bool Register(string playerName);
+        bool Register(string playerName, bool isHumanPlayer);
         List<Game> AvailableGames();
         Game CreateGame(GameSettings settings);
     }

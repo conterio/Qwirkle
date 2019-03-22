@@ -66,13 +66,13 @@ namespace Api
             }
         }
 
-        public bool Register(string playerName)
+        public bool Register(string playerName, bool isHumanPlayer)
         {
             if (string.IsNullOrWhiteSpace(playerName))
             {
                 return false;
             }
-            _playerRepository.AddPlayer(Context.ConnectionId, playerName);
+            _playerRepository.AddPlayer(Context.ConnectionId, playerName, isHumanPlayer);
             return true;
         }
 
