@@ -1,5 +1,4 @@
 using Busi.IBusi;
-using Busi.IRepo;
 using Busi.IService;
 using Microsoft.AspNetCore.SignalR;
 using Models;
@@ -11,14 +10,13 @@ namespace Api
 {
     public class ServerManagerHub : Hub, IServerManager, ILobbyManager, IGameManager
     {
-        private readonly IPlayerRepository _playerRepository;
+        private readonly IPlayerBusi _playerBusi;
         private readonly IGameBusi _gameBusi;
 
-        public ServerManagerHub(IPlayerRepository playerRepository,
-            IGameRepository gameRepository,
+        public ServerManagerHub(IPlayerBusi playerBusi,
             IGameBusi gameBusi)
         {
-            _playerRepository = playerRepository; //TODO remove player repository or make it a singleton
+            _playerBusi = playerBusi;
             _gameBusi = gameBusi;
         }
 
@@ -55,7 +53,7 @@ namespace Api
         public List<Player> GetAvailablePlayers()
         {
             //TODO do we want to return the whole player object?
-            return _playerRepository.GetAllPlayers();
+            return _playerBusi.GetAllPlayers();
         }
 
         public bool JoinGame(Guid gameId, string playerConnectionId)
@@ -78,7 +76,7 @@ namespace Api
             {
                 return false;
             }
-            _playerRepository.AddPlayer(Context.ConnectionId, playerName, isHumanPlayer);
+            _playerBusi.AddPlayer(Context.ConnectionId, playerName, isHumanPlayer);
             return true;
         }
 

@@ -9,5 +9,8 @@ namespace Busi.IBusi
 		bool RemoveTilesFromHand(List<Tile> tiles, string playerConnectionId);
         void AddTilesToHand(List<Tile> tiles, string playerConnectionId);
 		void AddScore(int value, string playerConnectionId);
-	}
+        void AddPlayer(string connectionId, string playerName, bool isHumanPlayer);
+        List<Player> GetAllPlayers();
+        Player GetPlayer(string connectionId);
+    }
 }
