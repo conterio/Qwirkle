@@ -8,6 +8,7 @@ using Models.ClientCommands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Models.ClientOutBound;
 
 namespace Busi
 {
@@ -28,14 +29,24 @@ namespace Busi
             _playerBusi = playerBusi;
         }
 
-        public Game CreateGame(GameSettings settings)
+        public AvailableGameViewModel CreateGame(GameSettings settings, string hostId)
         {
-            return _gameRepository.CreateGame(settings);
+			var game = _gameRepository.CreateGame(settings);
+
+			AddPlayer(game.GameId, hostId);
+
+			return new AvailableGameViewModel(game);
         }
 
-        public List<Game> GetLobbies()
+		///preston why don't you come to land and join us in real life like a normal person
+		//because I'm leaving in like 65 minutes.And I am normal. ok hf
+		/// <summary>
+		/// Gets the lobbies.
+		/// </summary>
+        public List<AvailableGameViewModel> GetLobbies()
         {
-            return _gameRepository.GetLobbies();
+            var games = _gameRepository.GetLobbies();
+			return games.Select(g => new AvailableGameViewModel(g)).ToList();
         }
 
         public void StartGame(Guid gameId)
@@ -74,7 +85,25 @@ namespace Busi
             _updater.GameInfoEvent(player.ConnectionId, gameInfoEvent);
         }
 
-        public void PlayTiles(string playerConnectionId, PlayTilesTurn turn)
+		public void RemovePlayer(Guid gameId, string playerId)
+		{
+			var game = _gameRepository.GetGame(gameId);
+			var player = _playerRepository.GetPlayer(playerId);
+			//todo make sure the game object updates the game object in the dictionary
+			if(game.Status == GameStatus.Lobby)
+			{
+				//Player is leaving while game is still in lobby, remove player completely
+				game.Players.Remove(player);
+			}
+			else if(game.Status == GameStatus.InProgress)
+			{
+				//Player is leaving in the middle of the game, we need to set stillPlaying to false
+				player.StillPlaying = false;
+
+			}
+		}
+
+		public void PlayTiles(string playerConnectionId, PlayTilesTurn turn)
         {
             var game = _gameRepository.GetGame(turn.GameId);
 
@@ -187,15 +216,19 @@ namespace Busi
             if (game.IsEndOfGame())
             {
                 game.Status = GameStatus.GameEnded;
-                //TODO create closeGame repo method that stores a replay in DB and cleans up memory (remove game from game repo)
+
                 var endGameEvent = new EndGameEvent
                 {
                     Scores = game.Players.Select(p => (p.Name, p.Score)).ToList()
                 };
+
                 _updater.EndGameEvent(game.GameId.ToString(),endGameEvent);
-                return true;
+				_gameRepository.CleanUpGame(game.GameId);
+				return true;
             }
 			return false;
         }
+
+
 	}
 }

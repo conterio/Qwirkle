@@ -18,7 +18,8 @@ namespace Models
         }
 
         public Guid GameId { get; set; }
-        public List<Player> Players { get; set; }
+		public string GameName { get; set; }
+		public List<Player> Players { get; set; }
         public List<ITurn> Turns { get; set; }
         public GameSettings GameSettings { get; set; }
         public GameStatus Status { get; set; }

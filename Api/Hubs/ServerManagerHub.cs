@@ -3,8 +3,10 @@ using Busi.IService;
 using Microsoft.AspNetCore.SignalR;
 using Models;
 using Models.ClientCommands;
+using Models.ClientOutBound;
 using System;
 using System.Collections.Generic;
+
 
 namespace Api
 {
@@ -33,41 +35,30 @@ namespace Api
             }
         }
 
-        public List<Game> AvailableGames()
+        public List<AvailableGameViewModel> AvailableGames()
         {
-            //TODO do we want to return the whole game object?
             return _gameBusi.GetLobbies();
         }
 
-        public Game CreateGame(GameSettings settings)
+        public AvailableGameViewModel CreateGame(GameSettings settings)
         {
-            //TODO do we want to return the whole game object?
-            var game = _gameBusi.CreateGame(settings);
-            if (!JoinGame(game.GameId, Context.ConnectionId))
-            {
-                //TODO if we don't join the game should we delete it and fail the call?
-            }
-            return game;
+			return  _gameBusi.CreateGame(settings, Context.ConnectionId);
         }
 
-        public List<Player> GetAvailablePlayers()
+        public List<PlayerViewModel> GetAvailablePlayers()
         {
-            //TODO do we want to return the whole player object?
             return _playerBusi.GetAllPlayers();
         }
 
-        public bool JoinGame(Guid gameId, string playerConnectionId)
+        public void JoinGame(Guid gameId)
         {
-            try
-            {
-                _gameBusi.AddPlayer(gameId, playerConnectionId);
-                Groups.AddToGroupAsync(playerConnectionId, gameId.ToString()).GetAwaiter().GetResult();
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            _gameBusi.AddPlayer(gameId, Context.ConnectionId);
+            Groups.AddToGroupAsync(Context.ConnectionId, gameId.ToString()).GetAwaiter().GetResult();
+        }
+
+		public void LeaveGame(Guid gameId)
+        {
+            _gameBusi.RemovePlayer(gameId, Context.ConnectionId);
         }
 
         public bool Register(string playerName, bool isHumanPlayer)

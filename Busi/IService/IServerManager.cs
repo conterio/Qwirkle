@@ -1,4 +1,5 @@
 ﻿using Models;
+using Models.ClientOutBound;
 using System.Collections.Generic;
 
 namespace Busi.IService
@@ -6,7 +7,7 @@ namespace Busi.IService
     public interface IServerManager
     {
         bool Register(string playerName, bool isHumanPlayer);
-        List<Game> AvailableGames();
-        Game CreateGame(GameSettings settings);
+        List<AvailableGameViewModel> AvailableGames();
+        AvailableGameViewModel CreateGame(GameSettings settings);
     }
 }

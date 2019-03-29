@@ -7,7 +7,8 @@ namespace Busi.IRepo
     public interface IGameRepository
     {
         Game CreateGame(GameSettings gameSettings);
-        Game GetGame(Guid guid);
+        Game GetGame(Guid gameId);
         List<Game> GetLobbies();
+		void CleanUpGame(Guid gameId);
     }
 }

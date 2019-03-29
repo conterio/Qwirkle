@@ -1,8 +1,10 @@
 ﻿using Busi.IBusi;
 using Busi.IRepo;
 using Models;
+using Models.ClientOutBound;
 using Models.EventModels;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Busi
 {
@@ -69,9 +71,10 @@ namespace Busi
             _playerRepository.AddPlayer(connectionId, playerName, isHumanPlayer);
         }
 
-        public List<Player> GetAllPlayers()
+        public List<PlayerViewModel> GetAllPlayers()
         {
-            return _playerRepository.GetAllPlayers();
+            var players = _playerRepository.GetAllPlayers();
+			return players.Select(x => new PlayerViewModel(x)).ToList();
         }
 
         public Player GetPlayer(string connectionId)

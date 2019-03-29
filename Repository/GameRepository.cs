@@ -10,31 +10,35 @@ namespace Repository
 {
     public class GameRepository : IGameRepository
     {
-        private ConcurrentDictionary<Guid, Game> Games { get; set; }
+        private ConcurrentDictionary<Guid, Game> games { get; set; }
 
         public GameRepository() {
-            Games = new ConcurrentDictionary<Guid, Game>();
+            games = new ConcurrentDictionary<Guid, Game>();
         }
 
-        public Game GetGame(Guid guid)
+        public Game GetGame(Guid gameId)
         {
-            Games.TryGetValue(guid, out var game);
+            games.TryGetValue(gameId, out var game);
             return game;
         }
 
         public Game CreateGame(GameSettings gameSettings)
         {
-            //TODO we could be creating games that never get cleaned up.
-            //TODO we should add the host to the game
             //TODO add a way for players to leave the game and clean up game if there is no one left in the game
             var game = new Game {GameSettings = gameSettings, GameId = Guid.NewGuid()};
-            Games.AddOrUpdate(game.GameId, game, (_, __) => game);
+            games.AddOrUpdate(game.GameId, game, (_, __) => game);
             return game;
         }
 
         public List<Game> GetLobbies()
         {
-            return Games.Values.Where(g => g.Status == GameStatus.Lobby).ToList();
+            return games.Values.Where(g => g.Status == GameStatus.Lobby &&
+                                           g.GameSettings.MaxPlayers > g.Players.Where(p => !p.IsSpectator).Count()).ToList();
+        }
+
+        public void CleanUpGame(Guid gameId)
+        {
+			games.TryRemove(gameId, out var _);
         }
     }
 }
