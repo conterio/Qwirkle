@@ -46,6 +46,7 @@ namespace Api.Updaters
 
 		public void PlayerRemoveEvent(string groupId, PlayerRemovedEvent payload)
 		{
+            //TODO implement this
 			throw new System.NotImplementedException();
 		}
 	}
