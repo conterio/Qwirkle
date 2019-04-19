@@ -22,17 +22,14 @@ namespace Api
             _gameBusi = gameBusi;
         }
 
-        public bool SignalAddPlayer(Guid gameId, string playerConnectionId)
+		public string GetPlayerId()
+		{
+			return Context.ConnectionId;
+		}
+
+        public void SignalAddPlayer(Guid gameId, string playerConnectionId)
         {
-            try
-            {
-                Clients.Client(playerConnectionId).SendAsync(nameof(IAIManager.JoinGame), gameId).GetAwaiter().GetResult();
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            Clients.Client(playerConnectionId).SendAsync(nameof(IAIManager.JoinGame), gameId).GetAwaiter().GetResult();
         }
 
         public List<AvailableGameViewModel> AvailableGames()
@@ -61,14 +58,13 @@ namespace Api
             _gameBusi.RemovePlayer(gameId, Context.ConnectionId);
         }
 
-        public bool Register(string playerName, bool isHumanPlayer)
+        public void Register(string playerName, bool isHumanPlayer)
         {
             if (string.IsNullOrWhiteSpace(playerName))
             {
-                return false;
+                return;
             }
             _playerBusi.AddPlayer(Context.ConnectionId, playerName, isHumanPlayer);
-            return true;
         }
 
         public void StartGame(Guid gameId)

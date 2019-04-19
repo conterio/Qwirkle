@@ -10,7 +10,7 @@ namespace Busi.IService
         void JoinGame(Guid gameId);
 		void LeaveGame(Guid gameId);
         void StartGame(Guid gameId);
-        bool SignalAddPlayer(Guid gameId, string playerConnectionId);
+        void SignalAddPlayer(Guid gameId, string playerConnectionId);
         List<PlayerViewModel> GetAvailablePlayers();
     }
 }

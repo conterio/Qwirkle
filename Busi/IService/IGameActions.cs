@@ -4,10 +4,12 @@ namespace Busi.IService
 {
     public interface IGameActions
     {
-        void LobbyEvent();
         void TurnEvent(TurnEvent turn);
         void EndTurnEvent(EndTurnEvent endTurn);
-        void GameStarted();
-        void GameOver();
-    }
+        void GameStartedEvent(StartGameEvent startGameEvent);
+        void GameOverEvent(EndGameEvent endGameEvent);
+		void GameInfoEvent(GameInfoEvent gameInfoEvent);
+		void PlayerJoinedEvent(PlayerJoinedEvent playerJoinedEvent);
+		void PlayerRemovedEvent(PlayerRemovedEvent playerRemovedEvent);
+	}
 }

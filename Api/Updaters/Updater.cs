@@ -26,26 +26,27 @@ namespace Api.Updaters
 
 		public void GameInfoEvent(string connectionId, GameInfoEvent payload)
 		{
-			_hubContext.Clients.Client(connectionId).SendAsync(nameof(GameInfoEvent), payload);
+			_hubContext.Clients.Client(connectionId).SendAsync(nameof(IGameActions.GameInfoEvent), payload);
 		}
 
 		public void PlayerJoinedGameLobbyEvent(string groupId, PlayerJoinedEvent payload)
 		{
-			_hubContext.Clients.Group(groupId).SendAsync(nameof(PlayerJoinedEvent), payload);
+			_hubContext.Clients.Group(groupId).SendAsync(nameof(IGameActions.PlayerJoinedEvent), payload);
 		}
 
 		public void StartGameEvent(string groupId, StartGameEvent payload)
 		{
-			_hubContext.Clients.Group(groupId).SendAsync(nameof(StartGameEvent), payload);
+			_hubContext.Clients.Group(groupId).SendAsync(nameof(IGameActions.GameStartedEvent), payload);
 		}
 
 		public void EndGameEvent(string groupId, EndGameEvent payload)
 		{
-			_hubContext.Clients.Group(groupId).SendAsync(nameof(EndGameEvent), payload);
+			_hubContext.Clients.Group(groupId).SendAsync(nameof(IGameActions.GameOverEvent), payload);
 		}
 
 		public void PlayerRemoveEvent(string groupId, PlayerRemovedEvent payload)
 		{
+			//TODO
 			throw new System.NotImplementedException();
 		}
 	}

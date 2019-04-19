@@ -7,8 +7,8 @@ namespace Models
 {
     public class TileBag
     {
-		[ThreadStatic]
-		private static Random _random = new Random();
+		//[ThreadStatic]
+		private readonly Random _random = new Random();
         public TileBag(int numOfSameShapeAndColor = 3)
         {
             Tiles = new List<Tile>();
