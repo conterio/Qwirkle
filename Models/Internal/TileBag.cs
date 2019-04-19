@@ -61,6 +61,7 @@ namespace Models
 
         public void Shuffle()
         {
+            //TODO this is not safe the second time you call it
             Tiles = Tiles.OrderBy(_ => _random.Next()).ToList();
         }
     }

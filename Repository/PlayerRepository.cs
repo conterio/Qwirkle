@@ -17,7 +17,6 @@ namespace Repository
 
         public void AddPlayer(string connectionId, string playerName, bool isHumanPlayer)
         {
-			//TODO are we adding a human or computer player
 			var player = new Player()
 			{
 				IsHumanPlayer = isHumanPlayer,

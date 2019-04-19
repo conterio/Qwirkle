@@ -89,7 +89,6 @@ namespace Busi
 		{
 			var game = _gameRepository.GetGame(gameId);
 			var player = _playerRepository.GetPlayer(playerId);
-			//todo make sure the game object updates the game object in the dictionary
 			if(game.Status == GameStatus.Lobby)
 			{
 				//Player is leaving while game is still in lobby, remove player completely
