@@ -56,13 +56,18 @@ namespace Busi
             _shuffleHelper.Shuffle(game.Players);
             game.CurrentTurnPlayerId = game.Players[0].ConnectionId;
 
-            var startGameEvent = new StartGameEvent
-            {
-                CurrentPlayerId = game.CurrentTurnPlayerId,
-                PlayerOrder = game.Players.Select(p => p.ConnectionId).ToList()
-            };
+			var startGameEvent = new StartGameEvent
+			{
+				CurrentPlayerId = game.CurrentTurnPlayerId,
+				PlayerOrder = game.Players.Select(p => p.ConnectionId).ToList()
+			};
 
-            _updater.StartGameEvent(game.GameId.ToString(), startGameEvent);
+			foreach (var player in game.Players)
+			{
+				player.CurrentHand = game.TileBag.DrawTiles(game.GameSettings.HandSize);
+				startGameEvent.StartingHand = player.CurrentHand;
+				_updater.StartGameEvent(player.ConnectionId, startGameEvent);
+			}
         }
 
         public void AddPlayer(Guid gameId, string playerConnectionId)

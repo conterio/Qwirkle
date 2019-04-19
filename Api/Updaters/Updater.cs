@@ -34,9 +34,9 @@ namespace Api.Updaters
 			_hubContext.Clients.Group(groupId).SendAsync(nameof(IGameActions.PlayerJoinedEvent), payload);
 		}
 
-		public void StartGameEvent(string groupId, StartGameEvent payload)
+		public void StartGameEvent(string connectionId, StartGameEvent payload)
 		{
-			_hubContext.Clients.Group(groupId).SendAsync(nameof(IGameActions.GameStartedEvent), payload);
+			_hubContext.Clients.Client(connectionId).SendAsync(nameof(IGameActions.GameStartedEvent), payload);
 		}
 
 		public void EndGameEvent(string groupId, EndGameEvent payload)
