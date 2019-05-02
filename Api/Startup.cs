@@ -33,7 +33,7 @@ namespace Api
             services.AddSingleton<IPlayerRepository, PlayerRepository>();
 			services.AddSingleton<IShuffleHelper, ShuffleHelper>();
             services.AddTransient<IGameBusi, GameBusi>();
-			services.AddTransient<IGameRepository, GameRepository>();
+			services.AddSingleton<IGameRepository, GameRepository>();
 			services.AddSingleton<IServerManager, ServerManagerHub>();
 			services.AddTransient<IUpdater, Updater>();
 			services.AddTransient<IPlayerBusi, PlayerBusi>();
